@@ -1,0 +1,23 @@
+# --- Backend ---
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/rag_pipeline/chroma_db/
+backend/rag_pipeline/__pycache__/
+
+# --- Frontend ---
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# --- General / OS ---
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
