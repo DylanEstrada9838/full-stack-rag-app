@@ -1,4 +1,4 @@
-# RAG App — Reglamento Tec de Monterrey
+# RAG App — Reglamento Universitario
 
 A full-stack Q&A chat application powered by a Retrieval-Augmented Generation (RAG) pipeline. Ask questions about the **Reglamento General de Estudiantes** and get contextual answers from an LLM.
 
