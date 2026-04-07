@@ -132,6 +132,24 @@ The app will be available at **http://localhost:5173**.
 
 ---
 
+## 🔍 Optimization & Evaluation
+
+The performance of this RAG system is not accidental. The current configuration was selected through a rigorous experimental process:
+
+1.  **Ground Truth Generation**: A custom dataset of Q&A pairs was created from the regulation PDF, mapping specific questions to their exact source pages.
+2.  **Chunking Experiments**: **20 different versions** of the Chroma vector database were generated using various chunking strategies (varying sizes, overlaps, and methods like recursive vs. semantic).
+3.  **Random Search Tuning**: We conducted a **Random Search** across **20 different retrieval configurations**, testing various combinations of:
+    *   `k` (number of documents retrieved)
+    *   `lambda_mult` (MMR diversity)
+    *   Hybrid search weights (Dense vs. Sparse)
+4.  **Metrics**: Each configuration was evaluated against the Ground Truth using industry-standard metrics:
+    *   **Hit Rate**: Measuring how often the correct document was in the top results.
+    *   **MRR (Mean Reciprocal Rank)**: Measuring how high up the correct document appeared in the list.
+
+The current settings represent the **highest-performing configuration** discovered during this optimization phase, ensuring top-tier retrieval accuracy and speed.
+
+---
+
 ### 📸 Application Interface
 ![App Interface](./assets/rag-app.png)
 
