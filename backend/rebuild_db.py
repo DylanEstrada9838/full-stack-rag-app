@@ -2,9 +2,6 @@ import os
 import sys
 from config import CHROMA_DB_PATH, RAG_DIR
 
-# Add rag_pipeline to sys.path so its internal imports resolve correctly
-sys.path.insert(0, RAG_DIR)
-
 from rag_pipeline.vectorstore import create_vector_db
 
 def rebuild():

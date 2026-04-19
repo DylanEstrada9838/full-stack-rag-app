@@ -1,3 +1,10 @@
+"""
+llm.py — LLM instances and RAG chain orchestration.
+
+Provides utility functions to instantiate language models (Groq or Ollama)
+and build the LangChain prompt and LCEL chain for retrieval-augmented generation.
+"""
+
 import os
 from langchain_ollama import ChatOllama
 from langchain_groq import ChatGroq
@@ -44,10 +51,9 @@ def get_llm(model=None, temperature=0.3):
     )
 
 
-def get_rag_chain(retriever):
-    llm = get_llm()
-
-    prompt = ChatPromptTemplate.from_messages([
+def get_prompt():
+    """Returns the ChatPromptTemplate for the RAG chain."""
+    return ChatPromptTemplate.from_messages([
         ("system",
          "Eres un asistente experto en el Reglamento General de Estudiantes "
          "del Tecnológico de Monterrey. Responde únicamente con la información "
@@ -56,6 +62,12 @@ def get_rag_chain(retriever):
          "Contexto:\n{context}"),
         ("human", "{question}"),
     ])
+
+
+def get_rag_chain(retriever):
+    """Builds and returns the full LCEL RAG chain."""
+    llm = get_llm()
+    prompt = get_prompt()
 
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)

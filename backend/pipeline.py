@@ -10,9 +10,6 @@ import sys
 from config import RAG_DIR, CHROMA_DB_PATH, RERANKER_TOP_N
 from state import state
 
-# Add rag_pipeline to sys.path so its internal imports resolve correctly
-sys.path.insert(0, RAG_DIR)
-
 from rag_pipeline.vectorstore import load_vectorstore
 from rag_pipeline.chunking import get_chunks
 from rag_pipeline.retriever import get_hybrid_retriever, get_reranker_retriever

@@ -31,7 +31,7 @@ function App() {
   const askQuestion = async (question) => {
     if (!question.trim() || isLoading) return
 
-    setMessages((prev) => [...prev, { role: 'user', text: question }])
+    setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'user', text: question }])
     setInput('')
     setIsLoading(true)
 
@@ -47,12 +47,13 @@ function App() {
 
       setMessages((prev) => [
         ...prev,
-        { role: 'bot', text: data.answer, sources: data.sources },
+        { id: crypto.randomUUID(), role: 'bot', text: data.answer, sources: data.sources },
       ])
     } catch {
       setMessages((prev) => [
         ...prev,
         {
+          id: crypto.randomUUID(),
           role: 'bot',
           text: 'Lo siento, hubo un error al procesar tu pregunta. Verifica que el servidor backend esté corriendo.',
         },
@@ -82,9 +83,9 @@ function App() {
         )}
 
         {/* Message list */}
-        {messages.map((msg, i) => (
+        {messages.map((msg) => (
           <ChatMessage
-            key={i}
+            key={msg.id}
             role={msg.role}
             text={msg.text}
             sources={msg.sources}

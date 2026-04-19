@@ -29,12 +29,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the full backend source
 COPY . .
 
+# Install local package
+RUN pip install -e .
+
 # Expose FastAPI port
 EXPOSE 8000
 
-# Healthcheck so docker-compose knows when the backend is ready
-HEALTHCHECK --interval=15s --timeout=5s --start-period=60s --retries=5 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+# Healthcheck is defined in docker-compose.yml
 
 # Run the FastAPI app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

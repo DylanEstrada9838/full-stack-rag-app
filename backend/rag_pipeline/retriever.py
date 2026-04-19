@@ -5,14 +5,6 @@ from langchain_classic.retrievers.document_compressors import CrossEncoderRerank
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 from langchain_classic.retrievers import ContextualCompressionRetriever
 
-def get_base_retriever(vectorstore):
-    return vectorstore.as_retriever(
-        search_kwargs={"k": 6}, 
-        search_type="mmr",
-        fetch_k=12,
-        lambda_mult=0.3,
-        )
-
 def get_hybrid_retriever(vectorstore,chunks):
     vec_retriever = vectorstore.as_retriever(
         search_kwargs={"k": 10}, 
@@ -47,4 +39,4 @@ def get_reranker_retriever(base_retriever, top_n=5):
         base_compressor=compressor, 
         base_retriever=base_retriever
     )
-    return compression_retriever
+    return compression_retriever

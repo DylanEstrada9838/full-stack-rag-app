@@ -6,12 +6,6 @@ def remove_index_page(docs):
     """
     return [doc for doc in docs if doc.metadata.get('page') != 8]
 
-# def remove_header(text):
-#     """
-#     Removes the string 'REGLAMENTO GENERAL DE ESTUDIANTES' at the beginning of the page.
-#     """
-#     return re.sub(r'^\s*REGLAMENTO GENERAL DE ESTUDIANTES\s*', '', text, flags=re.IGNORECASE)
-
 def remove_header(text):
     pattern = r'^\s*REGLAMENTO\s+GENERAL\s+DE\s+ESTUDIANTES\s*'
     

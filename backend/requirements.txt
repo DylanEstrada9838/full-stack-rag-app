@@ -1,19 +1,19 @@
 # ── RAG pipeline dependencies ──
-langchain-classic
-langchain-community
-langchain-core
-langchain-huggingface
-langchain-text-splitters
-langchain-experimental
-langchain-chroma
-chromadb
-sentence-transformers
-PyMuPDF
-rank-bm25
-python-dotenv
-langchain-ollama
-langchain-groq
+langchain-classic==1.0.3
+langchain-community==0.4.1
+langchain-core==1.2.25
+langchain-huggingface==1.2.1
+langchain-text-splitters==1.1.1
+langchain-experimental==0.4.1
+langchain-chroma==1.1.0
+chromadb==1.5.5
+sentence-transformers==5.3.0
+PyMuPDF==1.27.2.2
+rank-bm25==0.2.2
+python-dotenv==1.2.2
+langchain-ollama==1.0.1
+langchain-groq==1.1.2
 
 # ── Backend server ──
-fastapi
-uvicorn[standard]
+fastapi==0.135.3
+uvicorn[standard]==0.43.0

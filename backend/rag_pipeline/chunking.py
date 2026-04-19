@@ -3,7 +3,13 @@ from langchain_experimental.text_splitter import SemanticChunker
 from embeddings import get_embeddings
 from document import get_doc
 
-embeddings = get_embeddings()
+_embeddings = None
+
+def _get_embeddings():
+    global _embeddings
+    if _embeddings is None:
+        _embeddings = get_embeddings()
+    return _embeddings
 
 
 def recursive_chunker(doc, chunk_size=512, chunk_overlap=128, separators=None):
@@ -40,7 +46,7 @@ def semantic_chunker(doc, breakpoint_threshold_type="percentile",
         min_chunk_size:               minimum characters per chunk (default 100)
     """
     splitter = SemanticChunker(
-        embeddings,
+        _get_embeddings(),
         breakpoint_threshold_type=breakpoint_threshold_type,
         breakpoint_threshold_amount=breakpoint_threshold_amount,
         min_chunk_size=min_chunk_size,

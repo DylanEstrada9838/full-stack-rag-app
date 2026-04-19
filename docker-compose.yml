@@ -76,7 +76,7 @@ services:
       # Mount chroma_db so it persists and can be pre-built outside Docker
       - ./backend/rag_pipeline/chroma_db:/app/rag_pipeline/chroma_db
       # Mount the source PDF document
-      - ./backend/rag_pipeline/documento:/app/rag_pipeline/documento
+      - ./backend/rag_pipeline/documents:/app/rag_pipeline/documents
     ports:
       - "8000:8000"
     healthcheck:

@@ -8,7 +8,7 @@ Keeping routes separate from app setup makes it easy to add new routers
 
 import time
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from models import QuestionRequest, AnswerResponse
 from state import state
 from logger import log_request, log_chunks, log_answer
@@ -38,6 +38,9 @@ def ask_question(req: QuestionRequest):
         4. Run the full RAG chain to generate an answer.
         5. Log the answer and return it with source page numbers.
     """
+    if state.chain is None:
+        raise HTTPException(status_code=503, detail="Pipeline not ready yet")
+
     log_request(req.question)
 
     # Retrieve relevant chunks and measure time

@@ -1,48 +1,36 @@
 import os
 import shutil
-import glob
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from chunking import get_chunks
 from embeddings import get_embeddings
 
 
-def _next_version_dir(base_dir="."):
-    """Return the next available chroma_db_vN directory name."""
-    existing = glob.glob(os.path.join(base_dir, "chroma_db_v*"))
-    max_version = 0
-    for d in existing:
-        basename = os.path.basename(d)
-        try:
-            version = int(basename.split("_v")[-1])
-            max_version = max(max_version, version)
-        except ValueError:
-            continue
-    return os.path.join(base_dir, f"chroma_db_v{max_version + 1}")
-
-
 def create_vector_db(chunking_config=None, persist_dir=None):
     """
-    Create a new versioned Chroma vector store.
+    Create a new Chroma vector store.
 
     Args:
         chunking_config: dict passed to get_chunks() to control chunking.
-        persist_dir:     explicit directory path. If None, auto-increments
-                         to the next chroma_db_vN version.
+        persist_dir:     explicit directory path. If None, defaults to chroma_db.
 
     Returns:
         (vectorstore, persist_dir, chunks)
     """
-    load_dotenv()
     chunks = get_chunks(chunking_config)
     embeddings = get_embeddings()
 
     if persist_dir is None:
-        persist_dir = _next_version_dir()
+        persist_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chroma_db")
 
-    # Always start fresh for this version
+    # Always start fresh
     if os.path.exists(persist_dir):
-        shutil.rmtree(persist_dir)
+        for item in os.listdir(persist_dir):
+            item_path = os.path.join(persist_dir, item)
+            if os.path.isdir(item_path):
+                shutil.rmtree(item_path)
+            else:
+                os.remove(item_path)
 
     vectorstore = Chroma.from_documents(
         documents=chunks,
