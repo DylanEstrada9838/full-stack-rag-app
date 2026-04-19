@@ -12,7 +12,7 @@ A full-stack Q&A chat application powered by a Retrieval-Augmented Generation (R
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/rag-app.git
+git clone https://github.com/DylanEstrada9838/full-stack-rag-app.git
 cd rag-app
 
 # 2. Create your environment file
