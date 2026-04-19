@@ -14,7 +14,7 @@ import './App.css'
  * - Sends questions to the FastAPI backend (POST /ask).
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
 function App() {
   const [messages, setMessages] = useState([])
