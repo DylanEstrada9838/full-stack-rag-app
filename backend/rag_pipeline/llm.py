@@ -25,7 +25,7 @@ def get_llm(model=None, temperature=0.3):
 
     if provider == "groq":
         # Default Groq model — fast & free-tier friendly
-        groq_model = model or os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+        groq_model = model or os.getenv("GROQ_MODEL") or "llama-3.3-70b-versatile"
         groq_key = os.getenv("GROQ_API_KEY")
         if not groq_key:
             raise ValueError(
