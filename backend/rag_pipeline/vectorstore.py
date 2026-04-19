@@ -2,8 +2,8 @@ import os
 import shutil
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
-from chunking import get_chunks
-from embeddings import get_embeddings
+from rag_pipeline.chunking import get_chunks
+from rag_pipeline.embeddings import get_embeddings
 
 
 def create_vector_db(chunking_config=None, persist_dir=None):

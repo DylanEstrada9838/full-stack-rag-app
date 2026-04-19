@@ -1,7 +1,7 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_experimental.text_splitter import SemanticChunker
-from embeddings import get_embeddings
-from document import get_doc
+from rag_pipeline.embeddings import get_embeddings
+from rag_pipeline.document import get_doc
 
 _embeddings = None
 
