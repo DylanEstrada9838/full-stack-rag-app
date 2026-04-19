@@ -1,0 +1,109 @@
+# ── RAG App — Docker Compose ────────────────────────────────────────────────
+#
+# Prerequisites: copy .env.example to .env and fill in your values.
+#
+# ── Quick start with Groq (recommended — no GPU needed) ──────────────────────
+#   Set LLM_PROVIDER=groq and GROQ_API_KEY in .env, then:
+#   docker compose up --build
+#
+# ── Quick start with Ollama (local, no API key) ───────────────────────────────
+#   Set LLM_PROVIDER=ollama in .env, then:
+#   docker compose --profile ollama up --build
+#   (Downloads llama3 ~4 GB on first run)
+#
+# Services:
+#   backend   — FastAPI RAG API  (http://localhost:8000)
+#   frontend  — React app via Nginx (http://localhost:3000)
+#   ollama    — Local LLM server (only started with --profile ollama)
+#
+# ---------------------------------------------------------------------------
+
+services:
+
+  # ── Ollama LLM Server (optional — only used when LLM_PROVIDER=ollama) ────────
+  # Start with: docker compose --profile ollama up --build
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rag_ollama
+    profiles: ["ollama"]
+    restart: unless-stopped
+    volumes:
+      # Persist downloaded models so they survive container restarts
+      - ollama_models:/root/.ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # ── Ollama Model Init ──────────────────────────────────────────────────────
+  # One-shot service that pulls llama3 after Ollama is healthy.
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: rag_ollama_init
+    profiles: ["ollama"]
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: >
+      sh -c "
+        echo 'Pulling llama3 model (this may take a few minutes on first run)...' &&
+        ollama pull llama3 &&
+        echo 'llama3 ready!'
+      "
+
+  # ── FastAPI Backend ────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rag_backend
+    restart: unless-stopped
+    environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-groq}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - GROQ_MODEL=${GROQ_MODEL:-}
+      - OLLAMA_HOST=http://ollama:11434
+      - HF_TOKEN=${HF_TOKEN:-}
+      - EXTRA_CORS_ORIGINS=${EXTRA_CORS_ORIGINS:-}
+    volumes:
+      # Mount chroma_db so it persists and can be pre-built outside Docker
+      - ./backend/rag_pipeline/chroma_db:/app/rag_pipeline/chroma_db
+      # Mount the source PDF document
+      - ./backend/rag_pipeline/documento:/app/rag_pipeline/documento
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+
+  # ── React Frontend (Nginx) ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Empty string = relative URL, nginx proxies /ask → backend:8000/ask
+        VITE_API_URL: ""
+    container_name: rag_frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+
+
+# ── Named Volumes ──────────────────────────────────────────────────────────
+volumes:
+  ollama_models:
+    driver: local

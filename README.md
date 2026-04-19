@@ -2,6 +2,59 @@
 
 A full-stack Q&A chat application powered by a Retrieval-Augmented Generation (RAG) pipeline. Ask questions about the **Reglamento General de Estudiantes** and get contextual answers from an LLM.
 
+---
+
+## 🚀 Run with Docker (Recommended)
+
+> **Requirements:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running. That's it.
+
+### ⚡ Option A — Groq (Recommended: fast, free, no GPU needed)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/rag-app.git
+cd rag-app
+
+# 2. Create your environment file
+cp .env.example .env     # Linux/macOS
+copy .env.example .env   # Windows
+
+# 3. Open .env and add your Groq API key:
+#    Get a free key at https://console.groq.com
+#    LLM_PROVIDER=groq
+#    GROQ_API_KEY=your_key_here
+
+# 4. Build the vector database from the PDF (first time only)
+docker compose run --rm backend python rebuild_db.py
+
+# 5. Start the full stack
+docker compose up --build
+```
+
+### 🖥️ Option B — Ollama (local model, no API key, requires ~4 GB download)
+
+```bash
+# Same steps 1-4 as above, but set in .env:
+#   LLM_PROVIDER=ollama
+
+# 5. Start with the ollama profile
+docker compose --profile ollama up --build
+```
+
+> **First run note (Ollama only):** Docker will download the `llama3` model (~4GB). This only happens once — subsequent starts are fast because the model is cached in a Docker volume.
+
+| Service | URL |
+|---------|-----|
+| 🌐 Frontend (React UI) | http://localhost:3000 |
+| ⚙️ Backend API | http://localhost:8000 |
+
+To stop everything:
+```bash
+docker compose down
+```
+
+---
+
 ## 🧠 The RAG Pipeline Process
 
 This application uses a sophisticated **Retrieval-Augmented Generation (RAG)** pipeline to ensure answers are based on official documentation.
@@ -27,7 +80,8 @@ Instead of the AI guessing or hallucinating an answer, RAG allows it to **retrie
 
 4.  **Final Generation**:
     *   The relevant snippets are added to the AI's prompt as **Context**.
-    *   **Ollama (Llama 3)** reads the snippets and answers your question using *only* that information.
+    *   The LLM reads the snippets and answers your question using *only* that information.
+    *   Supports two backends: **Groq** (cloud, fast, free API key) or **Ollama** (local Llama 3, no key needed).
 
 
 ```
@@ -36,31 +90,35 @@ rag-app/
 ├── backend/         # FastAPI + RAG pipeline
 │   ├── rag_pipeline/ # Chunking, vectorstore, retriever, LLM chain
 │   ├── .env.example  # Template for environment variables
+│   ├── Dockerfile    # Backend container image
 │   ├── main.py      # API server
 │   ├── rebuild_db.py # Script to initialize/build the vector DB
 │   └── requirements.txt
 ├── frontend/        # React chat UI
 │   ├── src/
+│   ├── Dockerfile    # Frontend container image (Nginx)
+│   ├── nginx.conf    # Nginx reverse-proxy config
 │   ├── .env.example  # Template for frontend API URL
 │   └── package.json
-├── .gitignore       # Git exclusion rules
-└── README.md        # This file
+├── .env.example     # Root env file for Docker Compose secrets
+├── docker-compose.yml
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-## Prerequisites
+## Prerequisites (Manual Setup)
 
 - **Python 3.10+**
 - **Node.js 18+**
-- **Ollama** installed and running with `llama3` model:
-  ```bash
-  ollama run llama3
-  ```
+- **LLM** — choose one:
+  - **Groq** (recommended): Free API key from [console.groq.com](https://console.groq.com)
+  - **Ollama** (local): Install [Ollama](https://ollama.com) and run `ollama pull llama3`
 
 ---
 
-## Quick Start
+## Quick Start (Manual / Development)
 
 ### 1. Backend
 
@@ -73,9 +131,8 @@ python -m venv venv
 venv\Scripts\activate        # Windows
 # source venv/bin/activate   # macOS/Linux
 
-# Create environment file
-cp .env.example .env
-# (Optional) Open .env and add your HF_TOKEN if needed
+# Create environment file and add your LLM credentials
+cp .env.example .env    # then edit .env with your GROQ_API_KEY (or HF_TOKEN)
 
 # Install dependencies
 pip install -r requirements.txt
@@ -108,9 +165,11 @@ npm run dev
 
 The app will be available at **http://localhost:5173**.
 
+
 ---
 
 ## 🛠️ Tech Stack
+
 
 ### Frontend
 - **React (Vite)**: Modern, high-performance UI library and build tool.
@@ -126,7 +185,8 @@ The app will be available at **http://localhost:5173**.
 - **ChromaDB**: A powerful vector database used for local semantic storage and retrieval.
 - **Sentence Transformers**: `all-MiniLM-L6-v2` for generating precise semantic embeddings.
 - **BGE Reranker**: `bge-reranker-v2-m3` via HuggingFace for intelligent Cross-Encoder result sorting.
-- **Ollama**: Local engine to host and run the **Llama 3** LLM, ensuring privacy and speed.
+- **Groq**: Cloud LLM API — fast inference with `llama-3.3-70b-versatile` (default, free tier available).
+- **Ollama**: Alternative local engine to host and run **Llama 3**, ensuring privacy with no API key.
 - **Rank-BM25**: Industry-standard algorithm for sparse (keyword-based) search.
 - **PyMuPDF**: Efficient extraction and processing of content from the regulation PDF.
 

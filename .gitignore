@@ -15,9 +15,14 @@ frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
 
+# --- Docker ---
+# Keep .env.example committed; ignore the real secrets file
+.env
+
 # --- General / OS ---
 .DS_Store
 Thumbs.db
 *.log
 .vscode/
 .idea/
+

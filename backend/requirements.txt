@@ -12,6 +12,7 @@ PyMuPDF
 rank-bm25
 python-dotenv
 langchain-ollama
+langchain-groq
 
 # ── Backend server ──
 fastapi

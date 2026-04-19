@@ -1,0 +1,17 @@
+# Backend .dockerignore
+# Keeps the Docker build context small and avoids copying local artifacts
+
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# chroma_db is mounted as a volume at runtime, not baked into the image
+rag_pipeline/chroma_db/
+rag_pipeline/__pycache__/
+
+# Dev/IDE files
+.vscode/
+.idea/
+*.log
