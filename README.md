@@ -210,8 +210,8 @@ The current settings represent the **highest-performing configuration** discover
 
 ---
 
-### 📸 Application Interface
-![App UI ](./assets/1776601524084.jpg)
+### 📸 Application UI
+![App UI](./assets/1776601524084.jpg)
 
 ---
 
