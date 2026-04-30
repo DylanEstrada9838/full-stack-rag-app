@@ -211,7 +211,7 @@ The current settings represent the **highest-performing configuration** discover
 ---
 
 ### 📸 Application Interface
-![App Interface](./assets/rag-app.png)
+![App UI](./assets/1776601524084.jpg)
 
 ---
 
