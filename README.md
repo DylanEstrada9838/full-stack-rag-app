@@ -4,7 +4,7 @@ A full-stack Q&A chat application powered by a Retrieval-Augmented Generation (R
 
 ---
 
-## 🚀 Run with Docker (Recommended)
+##  Run with Docker (Recommended)
 
 > **Requirements:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running. That's it.
 
