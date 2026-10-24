@@ -6,10 +6,11 @@ Keeping routes separate from app setup makes it easy to add new routers
 (e.g. /history, /documents) without touching main.py.
 """
 
+import re
 import time
 
 from fastapi import APIRouter, HTTPException
-from models import QuestionRequest, AnswerResponse
+from models import QuestionRequest, AnswerResponse, ChunkInfo
 from state import state
 from logger import log_request, log_chunks, log_answer
 
@@ -36,7 +37,7 @@ def ask_question(req: QuestionRequest):
         2. Retrieve the most relevant document chunks.
         3. Log the chunks to the terminal for inspection.
         4. Run the full RAG chain to generate an answer.
-        5. Log the answer and return it with source page numbers.
+        5. Log the answer and return it with latency and top 5 source chunks.
     """
     if state.chain is None:
         raise HTTPException(status_code=503, detail="Pipeline not ready yet")
@@ -55,9 +56,26 @@ def ask_question(req: QuestionRequest):
     llm_ms = (time.perf_counter() - t1) * 1000
     log_answer(answer, llm_ms)
 
+    # Measure total end-to-end backend latency in seconds
+    total_latency_sec = round(time.perf_counter() - t0, 2)
+
     # Collect unique source page numbers
     source_pages = sorted(set(
         doc.metadata.get("page", 0) for doc in source_docs
     ))
 
-    return AnswerResponse(answer=answer, sources=source_pages)
+    # Package top 5 chunks for inspection (sanitizing single line breaks)
+    top_chunks = [
+        ChunkInfo(
+            page=int(doc.metadata.get("page", 0)),
+            content=re.sub(r'(?<!\n)\n(?!\n)', ' ', doc.page_content).strip(),
+        )
+        for doc in source_docs[:5]
+    ]
+
+    return AnswerResponse(
+        answer=answer,
+        sources=source_pages,
+        latency=total_latency_sec,
+        chunks=top_chunks,
+    )

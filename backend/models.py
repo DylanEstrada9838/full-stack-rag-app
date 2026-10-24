@@ -13,7 +13,15 @@ class QuestionRequest(BaseModel):
     question: str = Field(..., min_length=3, max_length=500, description="User question (3 to 500 characters)")
 
 
+class ChunkInfo(BaseModel):
+    """Information for a single retrieved chunk."""
+    page: int
+    content: str
+
+
 class AnswerResponse(BaseModel):
     """Response returned to the frontend after the RAG chain runs."""
     answer: str
     sources: list[int]  # Page numbers of the retrieved chunks (sorted)
+    latency: float | None = None  # Latency in seconds (rounded to 2 decimals)
+    chunks: list[ChunkInfo] = []  # Top 5 retrieved document chunks

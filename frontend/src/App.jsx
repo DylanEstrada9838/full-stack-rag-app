@@ -4,13 +4,15 @@ import ChatMessage from './components/ChatMessage'
 import ChatInput from './components/ChatInput'
 import ThinkingIndicator from './components/ThinkingIndicator'
 import WelcomeCard from './components/WelcomeCard'
+import ChunksPanel from './components/ChunksPanel'
 import './App.css'
 
 /**
  * App.jsx — Root component that orchestrates the chat experience.
  *
- * - Manages the message list and input state.
- * - Delegates rendering to Header, WelcomeCard, ChatMessage, ChatInput, ThinkingIndicator.
+ * - Manages the message list, input state, and active chunks inspection panel.
+ * - Measures and displays latency for each message in seconds (2 decimals).
+ * - Delegates rendering to Header, WelcomeCard, ChatMessage, ChatInput, ThinkingIndicator, ChunksPanel.
  * - Sends questions to the FastAPI backend (POST /ask).
  */
 
@@ -24,6 +26,9 @@ function App() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [currentChunks, setCurrentChunks] = useState([])
+  const [currentQuestion, setCurrentQuestion] = useState('')
+  const [isChunksOpen, setIsChunksOpen] = useState(false)
   const messagesEndRef = useRef(null)
 
   // Auto-scroll to the latest message
@@ -41,28 +46,48 @@ function App() {
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'user', text: trimmed }])
     setInput('')
     setIsLoading(true)
+    setCurrentQuestion(trimmed)
+
+    const startTime = performance.now()
 
     try {
       const res = await fetch(`${API_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question: trimmed }),
       })
 
       if (!res.ok) throw new Error('Server error')
       const data = await res.json()
 
+      const clientLatencySec = ((performance.now() - startTime) / 1000).toFixed(2)
+      const resolvedLatency = data.latency != null ? Number(data.latency).toFixed(2) : clientLatencySec
+      const chunks = data.chunks || []
+
+      // Update current question chunks
+      setCurrentChunks(chunks)
+
       setMessages((prev) => [
         ...prev,
-        { id: crypto.randomUUID(), role: 'bot', text: data.answer, sources: data.sources },
+        {
+          id: crypto.randomUUID(),
+          role: 'bot',
+          text: data.answer,
+          sources: data.sources,
+          latency: resolvedLatency,
+          chunks: chunks,
+        },
       ])
     } catch {
+      const clientLatencySec = ((performance.now() - startTime) / 1000).toFixed(2)
       setMessages((prev) => [
         ...prev,
         {
           id: crypto.randomUUID(),
           role: 'bot',
           text: 'Lo siento, hubo un error al procesar tu pregunta. Verifica que el servidor backend esté corriendo.',
+          latency: clientLatencySec,
+          chunks: [],
         },
       ])
     } finally {
@@ -79,9 +104,19 @@ function App() {
     askQuestion(text)
   }
 
+  const handleOpenChunks = (chunks) => {
+    if (chunks && chunks.length > 0) {
+      setCurrentChunks(chunks)
+    }
+    setIsChunksOpen(true)
+  }
+
   return (
     <div className="app">
-      <Header />
+      <Header
+        onToggleChunks={() => setIsChunksOpen((prev) => !prev)}
+        hasChunks={currentChunks.length > 0}
+      />
 
       <main className="messages">
         {/* Welcome card shown when no messages yet */}
@@ -96,6 +131,9 @@ function App() {
             role={msg.role}
             text={msg.text}
             sources={msg.sources}
+            latency={msg.latency}
+            chunks={msg.chunks}
+            onOpenChunks={handleOpenChunks}
           />
         ))}
 
@@ -112,6 +150,14 @@ function App() {
         isLoading={isLoading}
         maxChars={MAX_CHARS}
         minChars={MIN_CHARS}
+      />
+
+      {/* Slide-out / Bottom-sheet Chunks Inspection Panel */}
+      <ChunksPanel
+        isOpen={isChunksOpen}
+        onClose={() => setIsChunksOpen(false)}
+        chunks={currentChunks}
+        question={currentQuestion}
       />
     </div>
   )

@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown'
  *   - sources: (optional) Array of page numbers retrieved
  */
 
-function ChatMessage({ role, text, sources }) {
+function ChatMessage({ role, text, sources, latency, chunks, onOpenChunks }) {
   const isUser = role === 'user'
 
   return (
@@ -55,6 +55,36 @@ function ChatMessage({ role, text, sources }) {
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Bot metadata footer: Latency & Chunks button */}
+          {!isUser && (latency != null || (chunks && chunks.length > 0)) && (
+            <div className="message-meta-bar">
+              {latency != null && (
+                <div className="latency-pill" title="Latencia de respuesta">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span>{Number(latency).toFixed(2)}s</span>
+                </div>
+              )}
+
+              {chunks && chunks.length > 0 && (
+                <button
+                  type="button"
+                  className="open-chunks-btn"
+                  onClick={() => onOpenChunks(chunks)}
+                  title="Ver los fragmentos recuperados para esta respuesta"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  <span>Ver 5 Chunks</span>
+                </button>
+              )}
             </div>
           )}
         </div>
