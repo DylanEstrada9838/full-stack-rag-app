@@ -8,8 +8,6 @@ A full-stack Q&A chat application powered by a Retrieval-Augmented Generation (R
 
 > **Requirements:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running. That's it.
 
-### ⚡ Option A — Groq (Recommended: fast, free, no GPU needed)
-
 ```bash
 # 1. Clone the repository
 git clone https://github.com/DylanEstrada9838/full-stack-rag-app.git
@@ -21,7 +19,6 @@ copy .env.example .env   # Windows
 
 # 3. Open .env and add your Groq API key:
 #    Get a free key at https://console.groq.com
-#    LLM_PROVIDER=groq
 #    GROQ_API_KEY=your_key_here
 
 # 4. Build the vector database from the PDF (first time only)
@@ -30,18 +27,6 @@ docker compose run --rm backend python rebuild_db.py
 # 5. Start the full stack
 docker compose up --build
 ```
-
-### 🖥️ Option B — Ollama (local model, no API key, requires ~4 GB download)
-
-```bash
-# Same steps 1-4 as above, but set in .env:
-#   LLM_PROVIDER=ollama
-
-# 5. Start with the ollama profile
-docker compose --profile ollama up --build
-```
-
-> **First run note (Ollama only):** Docker will download the `llama3` model (~4GB). This only happens once — subsequent starts are fast because the model is cached in a Docker volume.
 
 | Service | URL |
 |---------|-----|
@@ -81,7 +66,7 @@ Instead of the AI guessing or hallucinating an answer, RAG allows it to **retrie
 4.  **Final Generation**:
     *   The relevant snippets are added to the AI's prompt as **Context**.
     *   The LLM reads the snippets and answers your question using *only* that information.
-    *   Supports two backends: **Groq** (cloud, fast, free API key) or **Ollama** (local Llama 3, no key needed).
+    *   Powered by **Groq** — fast cloud inference with `llama-3.3-70b-versatile` (free API key).
 
 
 ```
@@ -112,9 +97,7 @@ rag-app/
 
 - **Python 3.10+**
 - **Node.js 18+**
-- **LLM** — choose one:
-  - **Groq** (recommended): Free API key from [console.groq.com](https://console.groq.com)
-  - **Ollama** (local): Install [Ollama](https://ollama.com) and run `ollama pull llama3`
+- **Groq API key** — free from [console.groq.com](https://console.groq.com)
 
 ---
 
@@ -131,8 +114,8 @@ python -m venv venv
 venv\Scripts\activate        # Windows
 # source venv/bin/activate   # macOS/Linux
 
-# Create environment file and add your LLM credentials
-cp .env.example .env    # then edit .env with your GROQ_API_KEY (or HF_TOKEN)
+# Create environment file and add your Groq API key
+cp .env.example .env    # then edit .env with your GROQ_API_KEY
 
 # Install dependencies
 pip install -r requirements.txt
@@ -186,7 +169,6 @@ The app will be available at **http://localhost:5173**.
 - **Sentence Transformers**: `all-MiniLM-L6-v2` for generating precise semantic embeddings.
 - **BGE Reranker**: `bge-reranker-v2-m3` via HuggingFace for intelligent Cross-Encoder result sorting.
 - **Groq**: Cloud LLM API — fast inference with `llama-3.3-70b-versatile` (default, free tier available).
-- **Ollama**: Alternative local engine to host and run **Llama 3**, ensuring privacy with no API key.
 - **Rank-BM25**: Industry-standard algorithm for sparse (keyword-based) search.
 - **PyMuPDF**: Efficient extraction and processing of content from the regulation PDF.
 
