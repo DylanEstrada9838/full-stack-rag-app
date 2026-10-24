@@ -52,7 +52,7 @@ function ChunksPanel({ isOpen, onClose, chunks = [], question = '' }) {
             </div>
             <div>
               <h3>Fragmentos Recuperados</h3>
-              <p className="chunks-subtitle">Top 5 chunks utilizados por el LLM</p>
+              <p className="chunks-subtitle">Top 5 chunks utilizados por el sistema RAG</p>
             </div>
           </div>
           <button
