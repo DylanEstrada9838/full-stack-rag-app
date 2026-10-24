@@ -2,7 +2,7 @@
  * ThinkingIndicator.jsx — Animated dots shown while the bot is processing.
  */
 
-function ThinkingIndicator() {
+function ThinkingIndicator({ isFirstMessage }) {
   return (
     <div className="message bot">
       <div className="avatar bot-avatar">
@@ -19,7 +19,14 @@ function ThinkingIndicator() {
             <span></span>
             <span></span>
           </div>
-          <span className="thinking-text">Analizando el reglamento...</span>
+          <div className="thinking-details">
+            <span className="thinking-text">Analizando el reglamento...</span>
+            {isFirstMessage && (
+              <span className="thinking-subtext">
+                Activando servidor gratuito de Render (puede tardar ~30–50s)...
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

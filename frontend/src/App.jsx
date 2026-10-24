@@ -100,7 +100,7 @@ function App() {
         ))}
 
         {/* Thinking animation */}
-        {isLoading && <ThinkingIndicator />}
+        {isLoading && <ThinkingIndicator isFirstMessage={messages.length <= 1} />}
 
         <div ref={messagesEndRef} />
       </main>
