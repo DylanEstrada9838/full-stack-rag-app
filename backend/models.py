@@ -5,12 +5,12 @@ Keeping models separate from route logic makes validation easy to extend
 (e.g. adding conversation history or metadata fields later).
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class QuestionRequest(BaseModel):
     """Body sent by the frontend when the user submits a question."""
-    question: str
+    question: str = Field(..., min_length=3, max_length=500, description="User question (3 to 500 characters)")
 
 
 class AnswerResponse(BaseModel):

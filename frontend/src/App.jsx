@@ -17,6 +17,9 @@ import './App.css'
 const RAW_API_URL = import.meta.env.VITE_API_URL || import.meta.env.API_URL || 'http://localhost:8000'
 const API_URL = RAW_API_URL.replace(/\/+$/, '')
 
+const MAX_CHARS = 500
+const MIN_CHARS = 3
+
 function App() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
@@ -30,9 +33,12 @@ function App() {
 
   // Send a question to the API
   const askQuestion = async (question) => {
-    if (!question.trim() || isLoading) return
+    const trimmed = question.trim()
+    if (!trimmed || trimmed.length < MIN_CHARS || trimmed.length > MAX_CHARS || isLoading) {
+      return
+    }
 
-    setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'user', text: question }])
+    setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'user', text: trimmed }])
     setInput('')
     setIsLoading(true)
 
@@ -104,6 +110,8 @@ function App() {
         onChange={(e) => setInput(e.target.value)}
         onSubmit={handleSubmit}
         isLoading={isLoading}
+        maxChars={MAX_CHARS}
+        minChars={MIN_CHARS}
       />
     </div>
   )
