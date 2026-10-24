@@ -7,14 +7,14 @@ from langchain_classic.retrievers import ContextualCompressionRetriever
 
 def get_hybrid_retriever(vectorstore,chunks):
     vec_retriever = vectorstore.as_retriever(
-        search_kwargs={"k": 10}, 
+        search_kwargs={"k": 5}, 
         search_type="mmr",
         fetch_k=20,
         lambda_mult=0.3,
         )
     bm25_retriever = BM25Retriever.from_documents(
         documents=chunks,
-        k=10,
+        k=5,
         k1=1.2,
         b=0.75,
     )
@@ -39,4 +39,4 @@ def get_reranker_retriever(base_retriever, top_n=5):
         base_compressor=compressor, 
         base_retriever=base_retriever
     )
-    return compression_retriever
+    return compression_retriever

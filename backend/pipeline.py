@@ -35,8 +35,8 @@ def load_pipeline() -> None:
 
     print("🔗 Building hybrid retriever + reranker...")
     hybrid = get_hybrid_retriever(vectorstore, chunks)
-    state.retriever = get_reranker_retriever(hybrid, top_n=RERANKER_TOP_N)
-
+    #state.retriever = get_reranker_retriever(hybrid, top_n=RERANKER_TOP_N)
+    state.retriever = hybrid
     print("🧠 Building RAG chain (retriever → prompt → LLM)...")
     state.chain = get_rag_chain(state.retriever)
 

@@ -1,3 +1,7 @@
+import os
+import pickle
+import json
+import hashlib
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_experimental.text_splitter import SemanticChunker
 from rag_pipeline.embeddings import get_embeddings
@@ -57,6 +61,7 @@ def semantic_chunker(doc, breakpoint_threshold_type="percentile",
 def get_chunks(chunking_config=None):
     """
     Load the document and chunk it according to chunking_config.
+    Chunks are cached to disk to avoid re-computing them on every run.
 
     chunking_config dict keys:
         method: "recursive" | "semantic"  (default: "semantic")
@@ -65,18 +70,29 @@ def get_chunks(chunking_config=None):
     if chunking_config is None:
         chunking_config = {}
 
+    # Create a hash of the config to use as a cache key
+    config_hash = hashlib.md5(json.dumps(chunking_config, sort_keys=True).encode('utf-8')).hexdigest()
+    cache_dir = os.path.dirname(os.path.abspath(__file__))
+    cache_file = os.path.join(cache_dir, f"chunks_cache_{config_hash}.pkl")
+
+    if os.path.exists(cache_file):
+        print(f"Loading chunks from cache: {cache_file}")
+        with open(cache_file, "rb") as f:
+            return pickle.load(f)
+
+    print("Generating chunks...")
     doc = get_doc()
     method = chunking_config.get("method", "recursive")
 
     if method == "recursive":
-        return recursive_chunker(
+        chunks = recursive_chunker(
             doc,
             chunk_size=chunking_config.get("chunk_size", 512),
             chunk_overlap=chunking_config.get("chunk_overlap", 128),
             separators=chunking_config.get("separators"),
         )
     elif method == "semantic":
-        return semantic_chunker(
+        chunks = semantic_chunker(
             doc,
             breakpoint_threshold_type=chunking_config.get("breakpoint_threshold_type", "percentile"),
             breakpoint_threshold_amount=chunking_config.get("breakpoint_threshold_amount", 80),
@@ -84,3 +100,8 @@ def get_chunks(chunking_config=None):
         )
     else:
         raise ValueError(f"Unknown chunking method: {method}")
+
+    with open(cache_file, "wb") as f:
+        pickle.dump(chunks, f)
+
+    return chunks

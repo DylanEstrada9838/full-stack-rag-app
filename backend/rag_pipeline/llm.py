@@ -55,10 +55,21 @@ def get_prompt():
     """Returns the ChatPromptTemplate for the RAG chain."""
     return ChatPromptTemplate.from_messages([
         ("system",
-         "Eres un asistente experto en el Reglamento General de Estudiantes "
-         "del Tecnológico de Monterrey. Responde únicamente con la información "
-         "proporcionada en el contexto. Si la respuesta no se encuentra en el "
-         "contexto, indica que no tienes suficiente información.\n\n"
+          """
+Eres un asistente experto en el Reglamento General de Estudiantes 
+del Tecnológico de Monterrey.
+
+Tu tarea es responder únicamente con la información proporcionada 
+en el contexto recuperado.
+
+Instrucciones importantes:
+- Indica el artículo específico del reglamento del cual proviene la respuesta.
+- Si es posible, menciona también el capítulo, sección o título relacionado.
+- Si múltiples artículos aplican, enuméralos claramente.
+- No inventes artículos, números o información que no aparezcan en el contexto.
+- Si la respuesta no se encuentra en el contexto, responde:
+  "No tengo suficiente información en el contexto proporcionado."
+"""
          "Contexto:\n{context}"),
         ("human", "{question}"),
     ])
