@@ -43,4 +43,11 @@ def create_vector_db(chunking_config=None, persist_dir=None):
 def load_vectorstore(persist_dir=None):
     if persist_dir is None:
         persist_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chroma_db")
+
+    # If database does not exist or is empty, automatically build it
+    if not os.path.exists(persist_dir) or not os.listdir(persist_dir):
+        print("⚡ Chroma DB not found on disk. Initializing from documents...")
+        vectorstore, _, _ = create_vector_db(persist_dir=persist_dir)
+        return vectorstore
+
     return Chroma(persist_directory=persist_dir, embedding_function=get_embeddings())

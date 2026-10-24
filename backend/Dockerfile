@@ -9,10 +9,6 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONIOENCODING=utf-8
 
-# Where Ollama is running inside the Docker network
-# (overridable via docker-compose environment section)
-ENV OLLAMA_HOST=http://ollama:11434
-
 WORKDIR /app
 
 # Install system deps needed by some Python packages (e.g. PyMuPDF, chromadb)
@@ -35,7 +31,5 @@ RUN pip install -e .
 # Expose FastAPI port
 EXPOSE 8000
 
-# Healthcheck is defined in docker-compose.yml
-
-# Run the FastAPI app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the FastAPI app (respects $PORT provided by hosting platforms like Render)
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

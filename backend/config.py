@@ -29,5 +29,5 @@ CORS_ORIGINS = [
     "http://localhost:80",
     "http://127.0.0.1",
     "http://127.0.0.1:80",
-    *[o.strip() for o in _extra.split(",") if o.strip()],
+    *[o.strip().rstrip('/') for o in _extra.split(",") if o.strip()],
 ]
