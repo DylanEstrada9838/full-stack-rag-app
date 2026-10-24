@@ -66,7 +66,7 @@ Instead of the AI guessing or hallucinating an answer, RAG allows it to **retrie
 4.  **Final Generation**:
     *   The relevant snippets are added to the AI's prompt as **Context**.
     *   The LLM reads the snippets and answers your question using *only* that information.
-    *   Powered by **Groq** — fast cloud inference with `llama-3.3-70b-versatile` (free API key).
+    *   Powered by **Groq** — fast cloud inference with `openai/gpt-oss-120b` (free API key).
 
 
 ```
@@ -168,7 +168,7 @@ The app will be available at **http://localhost:5173**.
 - **ChromaDB**: A powerful vector database used for local semantic storage and retrieval.
 - **Sentence Transformers**: `all-MiniLM-L6-v2` for generating precise semantic embeddings.
 - **BGE Reranker**: `bge-reranker-v2-m3` via HuggingFace for intelligent Cross-Encoder result sorting.
-- **Groq**: Cloud LLM API — fast inference with `llama-3.3-70b-versatile` (default, free tier available).
+- **Groq**: Cloud LLM API — fast inference with `openai/gpt-oss-120b` (default, free tier available).
 - **Rank-BM25**: Industry-standard algorithm for sparse (keyword-based) search.
 - **PyMuPDF**: Efficient extraction and processing of content from the regulation PDF.
 
