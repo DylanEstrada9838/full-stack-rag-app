@@ -7,7 +7,7 @@ A production-ready full-stack Q&A application powered by a Retrieval-Augmented G
 [![Author](https://img.shields.io/badge/Author-Dylan_Estrada-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/dylan-estrada-606691216/)
 
 🌐 **Live Application:** [https://full-stack-rag-app-beta.vercel.app/](https://full-stack-rag-app-beta.vercel.app/)  
-👨‍💻 **Author:** [Dylan Estrada](https://www.linkedin.com/in/dylan-estrada-606691216/)
+👨‍💻 **Author:** [Dylan Estrada](https://www.linkedin.com/in/dylan-estrada-606691216/) · Asistido por Gemini 3.8 y Claude Sonnet 4.6
 
 ---
 
@@ -207,6 +207,6 @@ curl -X POST https://full-stack-rag-app-rk4t.onrender.com/ask \
 
 ## 👨‍💻 Author
 
-**Dylan Estrada**
+**Dylan Estrada** · *Asistido por Gemini 3.8 y Claude Sonnet 4.6*
 * 💼 LinkedIn: [dylan-estrada](https://www.linkedin.com/in/dylan-estrada-606691216/)
 * 🐙 GitHub: [@DylanEstrada9838](https://github.com/DylanEstrada9838)
