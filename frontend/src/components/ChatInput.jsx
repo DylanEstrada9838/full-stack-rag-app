@@ -69,7 +69,15 @@ function ChatInput({ value, onChange, onSubmit, isLoading, maxChars = 500, minCh
       </div>
 
       <div className="app-credit">
-        Creado por <span className="credit-author">Dylan Estrada</span>
+        Creado por{' '}
+        <a
+          href="https://www.linkedin.com/in/dylan-estrada-606691216/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="credit-author"
+        >
+          Dylan Estrada
+        </a>
       </div>
     </form>
   )

@@ -564,11 +564,13 @@ body {
 .app-credit .credit-author {
   color: var(--gray-600);
   font-weight: 600;
-  transition: color var(--transition);
+  text-decoration: none;
+  transition: color var(--transition), text-decoration var(--transition);
 }
 
-.app-credit:hover .credit-author {
+.app-credit .credit-author:hover {
   color: var(--blue-600);
+  text-decoration: underline;
 }
 
 /* ────────────────────── Animations ────────────────────── */

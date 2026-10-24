@@ -2,7 +2,22 @@
 
 A full-stack Q&A chat application powered by a Retrieval-Augmented Generation (RAG) pipeline. Ask questions about the **Reglamento General de Estudiantes** and get contextual answers from an LLM.
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://full-stack-rag-app-beta.vercel.app/)
+[![Author](https://img.shields.io/badge/Author-Dylan_Estrada-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/dylan-estrada-606691216/)
+
+🌐 **Live Application:** [https://full-stack-rag-app-beta.vercel.app/](https://full-stack-rag-app-beta.vercel.app/)  
+👨‍💻 **Developed by:** [Dylan Estrada](https://www.linkedin.com/in/dylan-estrada-606691216/)
+
 ---
+
+## 📌 Project Overview
+
+- **Full-Stack Architecture**: End-to-end modern stack built with **React (Vite)** on the frontend and **FastAPI** on the backend, containerized with **Docker** and deployed live on **Vercel** and **Render**.
+- **Context-Aware RAG Pipeline**: Orchestrated with **LangChain**, querying complex university regulations with strict citation and context attribution.
+- **Hybrid Retrieval System**: Combines semantic dense retrieval (MMR diversity + ChromaDB with `all-MiniLM-L6-v2` embeddings) with keyword sparse search (**BM25**), enhanced with cross-encoder reranker support for optimal relevance.
+- **Automated Ingestion Pipeline**: End-to-end PDF processing with PyMuPDF, recursive/semantic chunking, embedding generation, and automated vectorstore caching.
+- **High-Performance Cloud LLM**: Integrated with **Groq API** (`openai/gpt-oss-120b`) for ultra-low latency contextual answers without heavy GPU infrastructure.
+- **Empirical Optimization**: Retrieval hyperparameters (`k`, `lambda_mult`, dense/sparse weights) tuned across 20+ experimental configurations evaluated against custom ground-truth Q&A data using **Hit Rate** and **MRR** metrics.
 
 ##  Run with Docker (Recommended)
 
@@ -222,4 +237,10 @@ curl -X POST http://localhost:8000/ask \
 ```
 
 ---
+
+## 👨‍💻 Author
+
+**Dylan Estrada**
+* LinkedIn: [dylan-estrada](https://www.linkedin.com/in/dylan-estrada-606691216/)
+* GitHub: [@DylanEstrada9838](https://github.com/DylanEstrada9838)
 
