@@ -1,3 +1,5 @@
+import ReactMarkdown from 'react-markdown'
+
 /**
  * ChatMessage.jsx — A single message bubble (user or bot).
  *
@@ -28,7 +30,13 @@ function ChatMessage({ role, text, sources }) {
 
         {/* Bubble */}
         <div className={`message-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`}>
-          {text}
+          {isUser ? (
+            <div className="user-message-text">{text}</div>
+          ) : (
+            <div className="markdown-content">
+              <ReactMarkdown>{text}</ReactMarkdown>
+            </div>
+          )}
 
           {/* Source page tags */}
           {sources && sources.length > 0 && (
