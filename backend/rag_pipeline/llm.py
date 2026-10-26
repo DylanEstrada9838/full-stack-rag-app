@@ -6,10 +6,13 @@ and build the LangChain prompt and LCEL chain for retrieval-augmented generation
 """
 
 import os
+from pathlib import Path
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+
+PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 
 
 def get_llm(model=None, temperature=0.3):
@@ -34,26 +37,14 @@ def get_llm(model=None, temperature=0.3):
     )
 
 
-def get_prompt():
-    """Returns the ChatPromptTemplate for the RAG chain."""
+def get_prompt(prompt_file=None):
+    """Returns the ChatPromptTemplate for the RAG chain loading from prompts/."""
+    file_name = prompt_file or os.getenv("RAG_PROMPT_FILE", "v2.txt")
+    prompt_path = PROMPTS_DIR / file_name
+    system_text = prompt_path.read_text(encoding="utf-8").strip()
+
     return ChatPromptTemplate.from_messages([
-        ("system",
-          """
-Eres un asistente experto en el Reglamento General de Estudiantes 
-del Tecnológico de Monterrey.
-
-Tu tarea es responder únicamente con la información proporcionada 
-en el contexto recuperado.
-
-Instrucciones importantes:
-- Indica el artículo específico del reglamento del cual proviene la respuesta.
-- Si es posible, menciona también el capítulo, sección o título relacionado.
-- Si múltiples artículos aplican, enuméralos claramente.
-- No inventes artículos, números o información que no aparezcan en el contexto.
-- Si la respuesta no se encuentra en el contexto, responde:
-  "No tengo suficiente información en el contexto proporcionado."
-"""
-         "Contexto:\n{context}"),
+        ("system", f"{system_text}\n\nContexto:\n{{context}}"),
         ("human", "{question}"),
     ])
 
