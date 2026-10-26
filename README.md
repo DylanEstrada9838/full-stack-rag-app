@@ -201,7 +201,7 @@ curl -X POST https://full-stack-rag-app-rk4t.onrender.com/ask \
 ---
 
 ### 📸 Application UI
-![App UI](./rag-app.png)
+![App UI](./assets/rag-app.png)
 
 ---
 
