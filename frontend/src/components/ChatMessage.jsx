@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 /**
  * ChatMessage.jsx — A single message bubble (user or bot).
@@ -34,7 +35,7 @@ function ChatMessage({ role, text, sources, latency, chunks, onOpenChunks }) {
             <div className="user-message-text">{text}</div>
           ) : (
             <div className="markdown-content">
-              <ReactMarkdown>{text}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
             </div>
           )}
 

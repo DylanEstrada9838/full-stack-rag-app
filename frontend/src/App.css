@@ -484,6 +484,52 @@ body {
   font-family: monospace;
 }
 
+/* ────────────────────── Tables (GFM) ────────────────────── */
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-200);
+}
+
+.markdown-content th {
+  background: var(--blue-50);
+  color: var(--blue-900);
+  font-weight: 700;
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 2px solid var(--blue-200);
+  border-right: 1px solid var(--blue-100);
+  letter-spacing: -0.2px;
+}
+
+.markdown-content th:last-child {
+  border-right: none;
+}
+
+.markdown-content td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--gray-200);
+  border-right: 1px solid var(--gray-100);
+  color: var(--gray-700);
+  vertical-align: top;
+}
+
+.markdown-content td:last-child {
+  border-right: none;
+}
+
+.markdown-content tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown-content tr:nth-child(even) {
+  background: var(--gray-50);
+}
+
 /* ────────────────────── Source tags ────────────────────── */
 .sources {
   margin-top: 12px;
