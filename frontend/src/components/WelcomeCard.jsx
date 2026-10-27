@@ -1,21 +1,11 @@
+import { SUGGESTED_QUESTIONS } from '../constants/suggestions'
+
 /**
  * WelcomeCard.jsx — Shown at the top of the chat with helpful suggestions.
  *
  * Props:
  *   - onSuggestionClick: handler called with the suggestion text when clicked
  */
-
-const suggestions = [
-  '¿Qué implica la baja definitiva de un estudiante?',
-  '¿Cuáles son las consecuencias disciplinarias?',
-  '¿Qué son las medidas de protección?',
-  '¿Qué pasa si repruebo una materia?',
-  '¿Qué pasa si me dan de baja definitiva?',
-  'Qué sanción me pueden dar si consumo bebidas alcohólicas en el campus?',
-  'Qué sanción me pueden dar por fraude académico?',
-
-]
-
 function WelcomeCard({ onSuggestionClick }) {
   return (
     <div className="welcome-card">
@@ -46,7 +36,7 @@ function WelcomeCard({ onSuggestionClick }) {
         </p>
       </div>
       <div className="suggestions">
-        {suggestions.map((text, i) => (
+        {SUGGESTED_QUESTIONS.map((text, i) => (
           <button
             key={i}
             className="suggestion-chip"

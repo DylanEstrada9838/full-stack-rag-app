@@ -673,6 +673,107 @@ body {
   animation: pulse-dot 2s infinite ease-in-out;
 }
 
+/* ────────────────────── Persistent Suggestions Bar ────────────────────── */
+.suggestions-bar {
+  background: var(--white);
+  border-top: 1px solid var(--gray-200);
+  padding: 10px 20px 4px;
+  flex-shrink: 0;
+  animation: fadeUp 0.3s ease-out;
+}
+
+.suggestions-bar-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--blue-600);
+  margin-bottom: 8px;
+}
+
+.suggestions-bar-header svg {
+  color: var(--blue-500);
+}
+
+.suggestions-bar-track {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-300) transparent;
+}
+
+.suggestions-bar-track::-webkit-scrollbar {
+  height: 4px;
+}
+
+.suggestions-bar-track::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.suggestions-bar-track::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 2px;
+}
+
+.suggestions-bar-track::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+.suggestion-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gray-50);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  padding: 6px 13px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+
+.suggestion-pill svg {
+  color: var(--blue-500);
+  transition: transform var(--transition);
+}
+
+.suggestion-pill:hover:not(:disabled) {
+  background: var(--blue-50);
+  border-color: var(--blue-300);
+  color: var(--blue-800);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+.suggestion-pill:hover:not(:disabled) svg {
+  transform: translateX(2px);
+}
+
+.suggestion-pill:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.suggestion-pill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Adjust input-bar when preceded by suggestions-bar */
+.suggestions-bar + .input-bar {
+  border-top: none;
+  padding-top: 6px;
+}
+
 /* ────────────────────── Input bar ────────────────────── */
 .input-bar {
   padding: 16px 20px 12px;
@@ -891,6 +992,10 @@ body {
 
   .welcome-card p {
     font-size: 13px;
+  }
+
+  .suggestions-bar {
+    padding: 8px 14px 2px;
   }
 
   .input-bar {

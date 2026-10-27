@@ -5,6 +5,8 @@ import ChatInput from './components/ChatInput'
 import ThinkingIndicator from './components/ThinkingIndicator'
 import WelcomeCard from './components/WelcomeCard'
 import ChunksPanel from './components/ChunksPanel'
+import SuggestionsBar from './components/SuggestionsBar'
+import { SUGGESTED_QUESTIONS } from './constants/suggestions'
 import './App.css'
 
 /**
@@ -142,6 +144,15 @@ function App() {
 
         <div ref={messagesEndRef} />
       </main>
+
+      {/* Persistent horizontal suggestions bar when conversation is active */}
+      {messages.length > 0 && (
+        <SuggestionsBar
+          suggestions={SUGGESTED_QUESTIONS}
+          onSelect={handleSuggestion}
+          disabled={isLoading}
+        />
+      )}
 
       <ChatInput
         value={input}
