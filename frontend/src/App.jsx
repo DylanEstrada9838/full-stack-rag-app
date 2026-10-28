@@ -33,6 +33,13 @@ function App() {
   const [isChunksOpen, setIsChunksOpen] = useState(false)
   const messagesEndRef = useRef(null)
 
+  // Pre-warm backend on page load to eliminate/reduce cold start latency
+  useEffect(() => {
+    fetch(`${API_URL}/health`).catch(() => {
+      // Ignore network errors on silent pre-warm
+    })
+  }, [])
+
   // Auto-scroll to the latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
