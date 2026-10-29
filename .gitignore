@@ -5,6 +5,7 @@ backend/*.pyc
 backend/.env
 backend/rag_pipeline/chroma_db/
 backend/rag_pipeline/__pycache__/
+backend/rag_pipeline/*.pkl
 
 # --- Frontend ---
 frontend/node_modules/

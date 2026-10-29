@@ -12,6 +12,9 @@ RAG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rag_pipeline
 # Path to the pre-built Chroma vectorstore
 CHROMA_DB_PATH = os.path.join(RAG_DIR, "chroma_db")
 
+# Path to the pre-built BM25 retriever index
+BM25_INDEX_PATH = os.path.join(RAG_DIR, "bm25_retriever.pkl")
+
 # Reranker top-n results to keep
 RERANKER_TOP_N = 5
 
