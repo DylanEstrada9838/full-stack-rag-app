@@ -85,6 +85,12 @@ function App() {
           sources: data.sources,
           latency: resolvedLatency,
           chunks: chunks,
+          retrievalSec: data.retrieval_sec != null ? Number(data.retrieval_sec).toFixed(2) : (data.retrieval_ms != null ? (data.retrieval_ms / 1000).toFixed(2) : null),
+          llmSec: data.llm_sec != null ? Number(data.llm_sec).toFixed(2) : (data.llm_ms != null ? (data.llm_ms / 1000).toFixed(2) : null),
+          inputTokens: data.input_tokens,
+          outputTokens: data.output_tokens,
+          totalCost: data.total_cost,
+          model: data.model,
         },
       ])
     } catch {
@@ -142,6 +148,12 @@ function App() {
             sources={msg.sources}
             latency={msg.latency}
             chunks={msg.chunks}
+            retrievalSec={msg.retrievalSec}
+            llmSec={msg.llmSec}
+            inputTokens={msg.inputTokens}
+            outputTokens={msg.outputTokens}
+            totalCost={msg.totalCost}
+            model={msg.model}
             onOpenChunks={handleOpenChunks}
           />
         ))}
