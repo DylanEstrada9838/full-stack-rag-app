@@ -23,16 +23,16 @@ function WelcomeCard({ onSuggestionClick }) {
         procedimiento o normativa.
       </p>
 
-      {/* Render Free Tier Latency Notice */}
+      {/* Azure Container Apps Cold Start Latency Notice */}
       <div className="latency-notice">
         <div className="latency-notice-header">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
           </svg>
-          <span>Nota sobre la velocidad de respuesta</span>
+          <span>Velocidad de respuesta</span>
         </div>
         <p className="latency-notice-text">
-          Al estar desplegado en el nivel gratuito de Render, el <strong>primer mensaje</strong> puede tardar entre 30 y 50 segundos mientras el servidor se reactiva tras inactividad. A partir del <strong>segundo mensaje</strong>, disfrutarás de la latencia real ultra-rápida (sub-segundo vía Groq).
+          El <strong>primer mensaje</strong> puede tardar de <strong>5 a 9s</strong> por reactivación del servidor (Azure Container Apps). Luego las respuestas son inmediatas.
         </p>
       </div>
       <div className="suggestions">

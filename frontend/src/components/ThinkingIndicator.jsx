@@ -23,7 +23,7 @@ function ThinkingIndicator({ isFirstMessage }) {
             <span className="thinking-text">Analizando el reglamento...</span>
             {isFirstMessage && (
               <span className="thinking-subtext">
-                Activando servidor gratuito de Render (puede tardar ~30–50s)...
+                Iniciando servidor en Azure Container Apps (puede tardar ~5–9s)...
               </span>
             )}
           </div>

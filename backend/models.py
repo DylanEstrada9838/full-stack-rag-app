@@ -23,5 +23,14 @@ class AnswerResponse(BaseModel):
     """Response returned to the frontend after the RAG chain runs."""
     answer: str
     sources: list[int]  # Page numbers of the retrieved chunks (sorted)
-    latency: float | None = None  # Latency in seconds (rounded to 2 decimals)
-    chunks: list[ChunkInfo] = []  # Top 5 retrieved document chunks
+    latency: float | None = None  # Total latency in seconds (rounded to 2 decimals)
+    chunks: list[ChunkInfo] = []  # Top retrieved document chunks
+    # Telemetry & stats:
+    retrieval_sec: float | None = None  # Retrieval latency in seconds (2 decimals)
+    llm_sec: float | None = None  # Model answer latency in seconds (2 decimals)
+    retrieval_ms: float | None = None
+    llm_ms: float | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    total_cost: float | None = None
+    model: str | None = None

@@ -13,6 +13,7 @@ from fastapi import APIRouter, HTTPException
 from models import QuestionRequest, AnswerResponse, ChunkInfo
 from state import state
 from logger import log_request, log_chunks, log_answer
+from rag_pipeline.llm import generate_rag_answer
 
 router = APIRouter()
 
@@ -20,7 +21,7 @@ router = APIRouter()
 @router.get("/health")
 def health_check():
     """Health check — confirms the server is running and the pipeline is loaded."""
-    ready = state.chain is not None
+    ready = state.retriever is not None
     return {
         "status": "ok" if ready else "loading",
         "pipeline_ready": ready,
@@ -34,27 +35,30 @@ def ask_question(req: QuestionRequest):
 
     Flow:
         1. Log the incoming question.
-        2. Retrieve the most relevant document chunks.
-        3. Log the chunks to the terminal for inspection.
-        4. Run the full RAG chain to generate an answer.
-        5. Log the answer and return it with latency and top 5 source chunks.
+        2. Retrieve the most relevant document chunks (timed).
+        3. Log chunks to terminal.
+        4. Call OpenAI Responses API with retrieved context (timed).
+        5. Return answer with retrieval & model latencies, tokens, cost, and sources.
     """
-    if state.chain is None:
+    if state.retriever is None:
         raise HTTPException(status_code=503, detail="Pipeline not ready yet")
 
-    log_request(req.question)
-
-    # Retrieve relevant chunks and measure time
+    # 1. Retrieve relevant chunks and measure retrieval time
     t0 = time.perf_counter()
     source_docs = state.retriever.invoke(req.question)
-    retrieval_ms = (time.perf_counter() - t0) * 1000
+    retrieval_duration = time.perf_counter() - t0
+    retrieval_sec = round(retrieval_duration, 2)
+    retrieval_ms = round(retrieval_duration * 1000, 1)
     log_chunks(source_docs, retrieval_ms)
 
-    # Generate the answer and measure time
+    # 2. Format context & generate answer with OpenAI Responses API
+    context = "\n\n".join(doc.page_content for doc in source_docs)
     t1 = time.perf_counter()
-    answer = state.chain.invoke(req.question)
-    llm_ms = (time.perf_counter() - t1) * 1000
-    log_answer(answer, llm_ms)
+    rag_result = generate_rag_answer(context, req.question)
+    llm_duration = time.perf_counter() - t1
+    llm_sec = round(llm_duration, 2)
+    llm_ms = round(llm_duration * 1000, 1)
+    log_answer(rag_result["answer"], llm_ms)
 
     # Measure total end-to-end backend latency in seconds
     total_latency_sec = round(time.perf_counter() - t0, 2)
@@ -74,8 +78,16 @@ def ask_question(req: QuestionRequest):
     ]
 
     return AnswerResponse(
-        answer=answer,
+        answer=rag_result["answer"],
         sources=source_pages,
         latency=total_latency_sec,
         chunks=top_chunks,
+        retrieval_sec=retrieval_sec,
+        llm_sec=llm_sec,
+        retrieval_ms=retrieval_ms,
+        llm_ms=llm_ms,
+        input_tokens=rag_result["input_tokens"],
+        output_tokens=rag_result["output_tokens"],
+        total_cost=rag_result["total_cost"],
+        model=rag_result["model"],
     )
