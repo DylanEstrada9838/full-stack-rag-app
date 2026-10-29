@@ -1,212 +1,135 @@
 # RAG App — Reglamento Universitario
 
-A production-ready full-stack Q&A application powered by a Retrieval-Augmented Generation (RAG) pipeline. Designed to query complex university documentation (**Reglamento General de Estudiantes**) with accurate citations, strict context attribution, and zero hallucination.
+A production-ready full-stack Retrieval-Augmented Generation (RAG) assistant for university regulations (**Reglamento General de Estudiantes**), featuring sub-second hybrid retrieval, OpenAI inference, and live execution telemetry.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://full-stack-rag-app-beta.vercel.app/)
-[![Backend](https://img.shields.io/badge/API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://full-stack-rag-app-rk4t.onrender.com/health)
-[![Author](https://img.shields.io/badge/Author-Dylan_Estrada-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/dylan-estrada-606691216/)
+[![Backend API](https://img.shields.io/badge/API-Azure_Container_Apps-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)](https://rag-backend.happypond-8a46921f.spaincentral.azurecontainerapps.io/health)
 
-🌐 **Live Application:** [https://full-stack-rag-app-beta.vercel.app/](https://full-stack-rag-app-beta.vercel.app/)  
-👨‍💻 **Author:** [Dylan Estrada](https://www.linkedin.com/in/dylan-estrada-606691216/) · Asistido por Gemini 3.8 y Claude Sonnet 4.6
-
----
-
-## 📌 Project Highlights
-
-- **Full-Stack Architecture**: End-to-end decoupled system featuring a **React (Vite)** single-page chat interface and a high-performance **FastAPI** backend, fully containerized with **Docker** and deployed across **Vercel** (CDN) and **Render** (Container).
-- **Hybrid Retrieval System**: Combines semantic dense retrieval (MMR diversity + ChromaDB with `all-MiniLM-L6-v2` embeddings) with keyword sparse search (**BM25**), with cross-encoder reranking support for maximal answer relevance.
-- **Automated Ingestion Pipeline**: End-to-end PDF processing with PyMuPDF, recursive/semantic chunking, embedding generation, and automated vectorstore caching.
-- **Ultra-Fast Cloud Inference**: Powered by **Groq API** (`openai/gpt-oss-120b`) delivering high-quality, contextual answers with sub-second response times without expensive GPU infrastructure.
-- **Empirical Optimization**: Retrieval hyperparameters (`k`, `lambda_mult`, dense/sparse weights) rigorously tuned across 20+ experimental configurations evaluated against custom ground-truth Q&A data using **Hit Rate** and **MRR** metrics.
-- **User Experience & Safety**: Client-side & server-side character constraints (500 max chars), live input counter, error states, and responsive design.
+* 🌐 **Frontend (Vercel):** [full-stack-rag-app-beta.vercel.app](https://full-stack-rag-app-beta.vercel.app/)
+* ⚙️ **Backend API (Azure Container Apps):** [rag-backend.happypond-8a46921f.spaincentral.azurecontainerapps.io](https://rag-backend.happypond-8a46921f.spaincentral.azurecontainerapps.io/health)
 
 ---
 
-## 🧠 RAG Pipeline Architecture
+## ⚡ Highlights
 
-```
-[ PDF Document ] ──► PyMuPDF Parsing ──► Recursive Chunking ──► all-MiniLM-L6-v2 Embeddings ──► ChromaDB
-                                                                                                  │
-[ User Query ] ──┬──► Dense Semantic Search (ChromaDB + MMR) ──────────┐                           │
-                 │                                                     ├──► Hybrid Ensemble (60/40)
-                 └──► Sparse Keyword Search (Rank-BM25) ───────────────┘            │
-                                                                                    ▼
-[ Groq LLM ] ◄── Prompt Contextualization ◄── Top Relevant Snippets ◄────── Cross-Encoder Sorting
-      │
-      ▼
-[ Verified Answer + Source Page Numbers ]
-```
+* **Serverless Architecture:** Decoupled React (Vite) client on Vercel and a containerized FastAPI backend on **Azure Container Apps** (Spain Central) with automated **GitHub Actions CI/CD**.
+* **Ultra-Fast Hybrid Retrieval (~0.06s):** Dense vector search via **FastEmbed ONNX** (`BAAI/bge-small-en-v1.5` in ChromaDB) + pre-cached lexical search (**Rank-BM25**).
+* **OpenAI Responses API:** Strict context-grounded inference using `client.responses.create(model="gpt-4.1-mini")`.
+* **Real-Time Telemetry:** Live chat UI displays retrieval and model latencies in seconds, with a hoverable `+ Info` popover showing token usage (in/out) and estimated query cost.
 
-1. **Indexing & Embedding**:
-   - The official PDF is extracted using **PyMuPDF** preserving page metadata.
-   - Text is split into structured chunks and embedded into 384-dimensional vectors using `all-MiniLM-L6-v2`.
-   - Vectors are stored in a local **ChromaDB** collection for fast similarity search.
-2. **Hybrid Search (Dense + Sparse)**:
-   - When a user asks a question, the system queries both semantic meaning (**MMR**) and exact terms (**BM25**).
-   - Results are blended (60% semantic / 40% lexical) to avoid missing specific article numbers while maintaining semantic breadth.
-3. **Context-Constrained Generation**:
-   - Top candidates are formatted as strict context within an instruction-tuned system prompt.
-   - The **Groq LLM** generates the final response citing specific articles and chapters, explicitly refusing to answer if the context is insufficient.
+---
+
+## 🧠 Pipeline Architecture
+
+```text
+[ Query ] ──► Hybrid Search (Dense MMR + Sparse BM25) ──► Top 5 Chunks (0.06s)
+                                                                 │
+[ OpenAI Responses API ] ◄── Prompt Contextualization ───────────┘
+     (gpt-4.1-mini)
+           │
+           ▼
+[ Answer + Telemetry: Dual Latencies, Tokens, Cost & Chunks Drawer ]
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology | Purpose |
+| Component | Technology | Description |
 | :--- | :--- | :--- |
-| **Frontend** | React 19, Vite, Vanilla CSS | Interactive chat UI with character limits, dynamic indicators, and mobile responsiveness |
-| **Backend API** | FastAPI, Uvicorn, Pydantic | High-speed asynchronous REST API with validation and CORS control |
-| **RAG Orchestration** | LangChain / LangChain-Classic | LCEL chain composition, retriever blending, and prompt templating |
-| **Vector Database** | ChromaDB | Local vector persistence and similarity search |
-| **Embeddings** | Sentence Transformers (`all-MiniLM-L6-v2`) | Dense vector generation on CPU |
-| **Keyword Search** | Rank-BM25 | Sparse lexical retrieval |
-| **Document Parsing** | PyMuPDF (fitz) | High-speed PDF text extraction with page metadata |
-| **LLM Inference** | Groq Cloud API (`openai/gpt-oss-120b`) | Low-latency inference with free-tier accessibility |
-| **Deployment** | Docker, Vercel, Render | Containerized backend on Render and global edge frontend on Vercel |
-
----
-
-## 📊 Optimization & Evaluation
-
-The retrieval configuration is the result of empirical hyperparameter tuning:
-
-1. **Ground Truth Benchmark**: A curated evaluation dataset of Q&A pairs was mapped directly to verified source pages from the regulation PDF.
-2. **Chunking Experiments**: Evaluated **20 different chunking strategies** varying chunk sizes, overlaps, and split strategies (recursive vs. semantic).
-3. **Random Search Tuning**: Conducted a randomized search over **20 retrieval configurations** optimizing:
-   - `k` (retrieved document count)
-   - `lambda_mult` (diversity weighting for MMR)
-   - Dense vs. Sparse hybrid balance weights
-4. **Metrics**: Evaluated using **Hit Rate** (% of queries where correct document is in top-K) and **MRR** (Mean Reciprocal Rank).
-
-The deployed settings represent the **highest-performing configuration** discovered during this evaluation phase.
-
----
-
-## 🚀 Quick Start (Local Setup)
-
-### Option A — Run with Docker (Recommended)
-
-> **Requirements:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/DylanEstrada9838/full-stack-rag-app.git
-cd full-stack-rag-app
-
-# 2. Configure environment
-cp .env.example .env     # Linux/macOS
-copy .env.example .env   # Windows
-# Edit .env and insert your GROQ_API_KEY (from https://console.groq.com)
-
-# 3. Start the application
-docker compose up --build
-```
-
-Access the services:
-* 🌐 **Frontend UI:** `http://localhost:3000`
-* ⚙️ **Backend API:** `http://localhost:8000` (Health: `http://localhost:8000/health`)
-
----
-
-### Option B — Manual Setup (Development)
-
-#### 1. Backend
-
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate        # Windows
-# source venv/bin/activate   # macOS/Linux
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env         # Add your GROQ_API_KEY in .env
-
-# Build vector database (first time only)
-python rebuild_db.py
-
-# Run API server
-uvicorn main:app --reload
-```
-
-#### 2. Frontend
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-Frontend will run at `http://localhost:5173`.
-
----
-
-## 📁 Repository Structure
-
-```
-rag-app/
-├── assets/                  # Media and interface screenshots
-├── backend/                 # FastAPI backend service
-│   ├── rag_pipeline/        # Chunking, vectorstore, hybrid retriever, LLM chain
-│   │   ├── documents/       # Source PDF documents
-│   │   └── chroma_db/       # Local vector store (auto-generated)
-│   ├── Dockerfile           # Optimized container image (CPU-only PyTorch)
-│   ├── main.py              # FastAPI server entry point
-│   ├── config.py            # Environment & CORS configuration
-│   ├── rebuild_db.py        # Vector database build script
-│   └── requirements.txt     # Python dependencies
-├── frontend/                # React (Vite) client application
-│   ├── src/                 # Chat components, state, and styles
-│   ├── Dockerfile           # Nginx container image for production
-│   └── package.json         # Node.js dependencies & scripts
-├── docker-compose.yml       # Docker multi-service orchestration
-├── .env.example             # Environment template
-└── README.md
-```
+| **Frontend** | React 19, Vite, Vanilla CSS | Single-page chat UI with telemetry pills, hover popover, and chunks drawer |
+| **Backend API** | FastAPI, Uvicorn, Pydantic | Asynchronous REST service with CORS and error handling |
+| **LLM Inference** | OpenAI Responses API | `gpt-4.1-mini` via official OpenAI SDK |
+| **Embeddings** | FastEmbed ONNX | CPU-optimized `bge-small-en-v1.5` embeddings without PyTorch overhead |
+| **Vector & Keyword Store** | ChromaDB + Rank-BM25 | Persistent vectorstore and pre-cached sparse index |
+| **Cloud Hosting** | Azure Container Apps + Vercel | Scalable container service (Azure) and edge CDN (Vercel) |
 
 ---
 
 ## 📡 API Endpoints
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/health` | Health check & pipeline readiness status |
-| `POST` | `/ask` | Submit question (3–500 chars), returns answer + page citations |
-
-### Example Request
+### `POST /ask`
+Submit a question (3–500 characters) and receive an answer with telemetry and source chunks:
 
 ```bash
-curl -X POST https://full-stack-rag-app-rk4t.onrender.com/ask \
+curl -X POST https://rag-backend.happypond-8a46921f.spaincentral.azurecontainerapps.io/ask \
   -H "Content-Type: application/json" \
-  -d '{"question": "¿Qué implica la baja definitiva?"}'
+  -d '{"question": "¿Cuáles son las faltas disciplinarias?"}'
 ```
 
-### Example Response
-
+**Response (Sample):**
 ```json
 {
-  "answer": "La baja definitiva implica la pérdida total de la condición de estudiante del Tecnológico de Monterrey...",
-  "sources": [47, 51]
+  "answer": "Las faltas disciplinarias son todos aquellos hechos individuales o colectivos que desvirtúen...",
+  "latency": 3.86,
+  "retrieval_sec": 0.06,
+  "llm_sec": 3.80,
+  "input_tokens": 412,
+  "output_tokens": 128,
+  "total_cost": 0.000499,
+  "model": "gpt-4.1-mini-2025-04-14",
+  "chunks": [ ... ]
 }
 ```
 
 ---
 
-### 📸 Application UI
-![App UI](./assets/rag-app.png)
+## 🚀 Quick Start (Local)
+
+### 1. Backend
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate          # Windows (or: source venv/bin/activate)
+pip install -r requirements.txt
+# Set OPENAI_API_KEY in backend/.env
+python rebuild_db.py           # First time only: builds Chroma & BM25 cache
+uvicorn main:app --reload
+```
+
+### 2. Frontend
+```bash
+cd frontend
+npm install
+npm run dev                    # Runs on http://localhost:5173
+```
+
+---
+
+## 📁 Repository Structure
+
+```text
+rag-app/
+├── .github/
+│   └── workflows/
+│       └── deploy-backend-azure.yml # CI/CD deployment to Azure Container Apps
+├── backend/                         # FastAPI backend service
+│   ├── rag_pipeline/                # Chunking, vectorstore, retriever, OpenAI chain
+│   │   ├── documents/               # Source PDF regulation documents
+│   │   ├── prompts/                 # Prompt templates (v1.txt, v2.txt)
+│   │   ├── chroma_db/               # Pre-built Chroma vectorstore
+│   │   └── bm25_retriever.pkl       # Pre-cached BM25 lexical index
+│   ├── Dockerfile                   # Production Dockerfile
+│   ├── main.py                      # FastAPI server entry point
+│   ├── config.py                    # Environment & CORS configuration
+│   ├── routes.py                    # API route endpoints
+│   ├── models.py                    # Pydantic request/response schemas
+│   ├── rebuild_db.py                # Database build & caching script
+│   └── requirements.txt             # Python dependencies
+├── frontend/                        # React (Vite) client application
+│   ├── src/
+│   │   ├── components/              # ChatMessage, Header, ChunksPanel, WelcomeCard
+│   │   ├── constants/               # Suggested questions
+│   │   ├── App.jsx                  # Main application orchestrator
+│   │   └── App.css                  # UI styling, responsive layout & popover
+│   └── package.json                 # Node.js dependencies
+├── AZURE_DEPLOYMENT_SUMMARY.md      # Azure CLI & deployment log
+└── README.md
+```
 
 ---
 
 ## 👨‍💻 Author
 
-**Dylan Estrada** · *Asistido por Gemini 3.8 y Claude Sonnet 4.6*
-* 💼 LinkedIn: [dylan-estrada](https://www.linkedin.com/in/dylan-estrada-606691216/)
-* 🐙 GitHub: [@DylanEstrada9838](https://github.com/DylanEstrada9838)
+**Dylan Estrada** · *Asistido por Gemini 3.8 y Claude Sonnet 4.6*  
+💼 [LinkedIn](https://www.linkedin.com/in/dylan-estrada-606691216/) · 🐙 [GitHub](https://github.com/DylanEstrada9838)
