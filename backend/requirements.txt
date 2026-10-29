@@ -10,7 +10,8 @@ chromadb==1.5.5
 PyMuPDF==1.27.2.2
 rank-bm25==0.2.2
 python-dotenv==1.2.2
-langchain-groq==1.1.2
+openai>=1.54.0
+
 
 # ── Backend server ──
 fastapi==0.135.3
