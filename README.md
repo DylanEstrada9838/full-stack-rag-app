@@ -3,10 +3,9 @@
 A production-ready full-stack Retrieval-Augmented Generation (RAG) assistant for university regulations (**Reglamento General de Estudiantes**), featuring sub-second hybrid retrieval, OpenAI inference, and live execution telemetry.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://full-stack-rag-app-beta.vercel.app/)
-[![Backend API](https://img.shields.io/badge/API-Azure_Container_Apps-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)](https://rag-backend.happypond-8a46921f.spaincentral.azurecontainerapps.io/health)
+[![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 
-* 🌐 **Frontend (Vercel):** [full-stack-rag-app-beta.vercel.app](https://full-stack-rag-app-beta.vercel.app/)
-* ⚙️ **Backend API (Azure Container Apps):** [rag-backend.happypond-8a46921f.spaincentral.azurecontainerapps.io](https://rag-backend.happypond-8a46921f.spaincentral.azurecontainerapps.io/health)
+🌐 **Live Application:** [https://full-stack-rag-app-beta.vercel.app/](https://full-stack-rag-app-beta.vercel.app/)
 
 ---
 
@@ -52,7 +51,7 @@ A production-ready full-stack Retrieval-Augmented Generation (RAG) assistant for
 Submit a question (3–500 characters) and receive an answer with telemetry and source chunks:
 
 ```bash
-curl -X POST https://rag-backend.happypond-8a46921f.spaincentral.azurecontainerapps.io/ask \
+curl -X POST http://localhost:8000/ask \
   -H "Content-Type: application/json" \
   -d '{"question": "¿Cuáles son las faltas disciplinarias?"}'
 ```
@@ -127,9 +126,14 @@ rag-app/
 └── README.md
 ```
 
+## 📸 UI Preview
+
+![Application UI](./assets/rag-app.png)
+
 ---
 
 ## 👨‍💻 Author
 
 **Dylan Estrada** · *Asistido por Gemini 3.8 y Claude Sonnet 4.6*  
 💼 [LinkedIn](https://www.linkedin.com/in/dylan-estrada-606691216/) · 🐙 [GitHub](https://github.com/DylanEstrada9838)
+
