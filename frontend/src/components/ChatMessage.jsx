@@ -42,14 +42,18 @@ function ChatMessage({
       ? (Number(llmMs) / 1000).toFixed(2)
       : null
 
-  const hasTelemetry =
+  const hasDetails =
     !isUser &&
     (model ||
-      formattedRetrievalSec != null ||
-      formattedLlmSec != null ||
       inputTokens != null ||
       outputTokens != null ||
-      totalCost != null ||
+      totalCost != null)
+
+  const hasTelemetry =
+    !isUser &&
+    (formattedRetrievalSec != null ||
+      formattedLlmSec != null ||
+      hasDetails ||
       latency != null ||
       (chunks && chunks.length > 0))
 
@@ -80,23 +84,10 @@ function ChatMessage({
           )}
 
 
-          {/* Bot telemetry footer: 2 Latencies, Input/Output Tokens, Cost, Model & Chunks */}
+          {/* Bot telemetry footer: 2 Latencies directly visible, details on hover, and Chunks */}
           {hasTelemetry && (
             <div className="message-telemetry-container">
               <div className="message-telemetry-grid">
-                {model && (
-                  <div className="telemetry-pill model-pill" title="Modelo de lenguaje utilizado">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="11" width="18" height="10" rx="2" />
-                      <circle cx="12" cy="5" r="2" />
-                      <path d="M12 7v4" />
-                      <line x1="8" y1="16" x2="8" y2="16" />
-                      <line x1="16" y1="16" x2="16" y2="16" />
-                    </svg>
-                    <span>{model}</span>
-                  </div>
-                )}
-
                 {formattedRetrievalSec != null && (
                   <div className="telemetry-pill latency-retrieval" title="Latencia de recuperación en base vectorial + BM25">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -116,33 +107,58 @@ function ChatMessage({
                   </div>
                 )}
 
-                {inputTokens != null && (
-                  <div className="telemetry-pill tokens-in" title="Tokens de entrada (prompt + contexto recuperado)">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="7 10 12 15 17 10" />
-                      <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    <span>In: {inputTokens} tok</span>
-                  </div>
-                )}
+                {hasDetails && (
+                  <div className="telemetry-info-wrapper">
+                    <button
+                      type="button"
+                      className="telemetry-info-trigger"
+                      aria-label="Más información sobre modelo, tokens y costo"
+                    >
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                      </svg>
+                      <span>+ Info</span>
+                    </button>
 
-                {outputTokens != null && (
-                  <div className="telemetry-pill tokens-out" title="Tokens generados en la respuesta">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="17 14 12 9 7 14" />
-                      <line x1="12" y1="9" x2="12" y2="21" />
-                    </svg>
-                    <span>Out: {outputTokens} tok</span>
-                  </div>
-                )}
-
-                {totalCost != null && (
-                  <div className="telemetry-pill cost-pill" title="Costo estimado según tarifas de gpt-4.1-mini">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="12" y1="1" x2="12" y2="23" />
-                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                    </svg>
-                    <span>Costo: ${Number(totalCost).toFixed(5)}</span>
+                    <div className="telemetry-popover" role="tooltip">
+                      <div className="telemetry-popover-header">Detalles de la respuesta</div>
+                      <div className="telemetry-popover-list">
+                        {model && (
+                          <div className="telemetry-popover-item">
+                            <span className="popover-label">Modelo:</span>
+                            <span className="popover-value popover-model-badge">{model}</span>
+                          </div>
+                        )}
+                        {inputTokens != null && (
+                          <div className="telemetry-popover-item">
+                            <span className="popover-label">Tokens entrada:</span>
+                            <span className="popover-value">{inputTokens} tok</span>
+                          </div>
+                        )}
+                        {outputTokens != null && (
+                          <div className="telemetry-popover-item">
+                            <span className="popover-label">Tokens salida:</span>
+                            <span className="popover-value">{outputTokens} tok</span>
+                          </div>
+                        )}
+                        {inputTokens != null && outputTokens != null && (
+                          <div className="telemetry-popover-item">
+                            <span className="popover-label">Total tokens:</span>
+                            <span className="popover-value">{inputTokens + outputTokens} tok</span>
+                          </div>
+                        )}
+                        {totalCost != null && (
+                          <div className="telemetry-popover-item popover-cost-item">
+                            <span className="popover-label">Costo estimado:</span>
+                            <span className="popover-value popover-cost-value">
+                              ${Number(totalCost).toFixed(5)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
 
