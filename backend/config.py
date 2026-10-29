@@ -19,18 +19,9 @@ BM25_INDEX_PATH = os.path.join(RAG_DIR, "bm25_retriever.pkl")
 RERANKER_TOP_N = 5
 
 # Origins allowed to call the API.
-# - localhost:5173 → Vite dev server
-# - localhost:80 / localhost → Docker nginx
-# - EXTRA_CORS_ORIGINS → comma-separated list for production deployments
-_extra = os.getenv("EXTRA_CORS_ORIGINS", "")
+# Defaults to ["*"] so that Vercel, production domains, and local dev work without CORS blocks.
+_extra = os.getenv("EXTRA_CORS_ORIGINS", "*")
 CORS_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost",
-    "http://localhost:80",
-    "http://127.0.0.1",
-    "http://127.0.0.1:80",
+    "*",
     *[o.strip().rstrip('/') for o in _extra.split(",") if o.strip()],
 ]

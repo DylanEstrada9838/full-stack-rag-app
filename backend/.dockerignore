@@ -2,6 +2,9 @@
 # Keeps the Docker build context small and avoids copying local artifacts
 
 venv/
+venv
+**/venv/**
+.venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -10,6 +13,7 @@ __pycache__/
 # chroma_db is mounted as a volume at runtime, not baked into the image
 rag_pipeline/chroma_db/
 rag_pipeline/__pycache__/
+rag_pipeline/*.pkl
 
 # Dev/IDE files
 .vscode/

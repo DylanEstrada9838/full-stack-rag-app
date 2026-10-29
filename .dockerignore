@@ -1,0 +1,15 @@
+# Root .dockerignore
+venv/
+**/venv/**
+backend/venv/
+node_modules/
+**/node_modules/**
+frontend/dist/
+frontend/node_modules/
+.git/
+.env
+*.log
+.vscode/
+.idea/
+backend/rag_pipeline/chroma_db/
+backend/rag_pipeline/*.pkl

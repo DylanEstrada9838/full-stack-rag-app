@@ -26,4 +26,5 @@ Thumbs.db
 *.log
 .vscode/
 .idea/
+AZURE_DEPLOYMENT_SUMMARY.md
 
