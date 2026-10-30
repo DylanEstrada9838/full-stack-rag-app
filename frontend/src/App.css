@@ -530,6 +530,25 @@ body {
   background: var(--gray-50);
 }
 
+/* ────────────────────── Streaming Cursor ────────────────────── */
+.streaming-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--blue-600);
+  font-weight: 700;
+  animation: blink-cursor 0.8s infinite;
+  vertical-align: baseline;
+}
+
+@keyframes blink-cursor {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 /* ────────────────────── Source tags ────────────────────── */
 .sources {
   margin-top: 12px;
