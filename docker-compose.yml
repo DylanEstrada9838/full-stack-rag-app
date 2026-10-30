@@ -2,8 +2,8 @@
 #
 # Prerequisites: copy .env.example to .env and fill in your values.
 #
-# ── Quick start with Groq ────────────────────────────────────────────────────
-#   Set GROQ_API_KEY in .env, then:
+# ── Quick start with OpenAI ──────────────────────────────────────────────────
+#   Set OPENAI_API_KEY in .env, then:
 #   docker compose up --build
 #
 # Services:
@@ -22,8 +22,10 @@ services:
     container_name: rag_backend
     restart: unless-stopped
     environment:
-      - GROQ_API_KEY=${GROQ_API_KEY:-}
-      - GROQ_MODEL=${GROQ_MODEL:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4.1-mini}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-}
+      - RAG_PROMPT_FILE=${RAG_PROMPT_FILE:-}
       - HF_TOKEN=${HF_TOKEN:-}
       - EXTRA_CORS_ORIGINS=${EXTRA_CORS_ORIGINS:-}
     volumes:
