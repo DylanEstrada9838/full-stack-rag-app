@@ -25,6 +25,8 @@ function ChatMessage({
   totalCost,
   model,
   onOpenChunks,
+  isStreaming = false,
+  ttftSec,
 }) {
   const isUser = role === 'user'
 
@@ -45,6 +47,7 @@ function ChatMessage({
   const hasDetails =
     !isUser &&
     (model ||
+      ttftSec != null ||
       inputTokens != null ||
       outputTokens != null ||
       totalCost != null)
@@ -80,6 +83,7 @@ function ChatMessage({
           ) : (
             <div className="markdown-content">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
+              {isStreaming && <span className="streaming-cursor">▌</span>}
             </div>
           )}
 
@@ -129,6 +133,12 @@ function ChatMessage({
                           <div className="telemetry-popover-item">
                             <span className="popover-label">Modelo:</span>
                             <span className="popover-value popover-model-badge">{model}</span>
+                          </div>
+                        )}
+                        {ttftSec != null && (
+                          <div className="telemetry-popover-item">
+                            <span className="popover-label">Primer token (TTFT):</span>
+                            <span className="popover-value">{Number(ttftSec).toFixed(2)}s</span>
                           </div>
                         )}
                         {inputTokens != null && (

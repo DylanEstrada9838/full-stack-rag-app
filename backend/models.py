@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 class QuestionRequest(BaseModel):
     """Body sent by the frontend when the user submits a question."""
     question: str = Field(..., min_length=3, max_length=500, description="User question (3 to 500 characters)")
+    stream: bool = Field(False, description="Enable real-time token streaming via Server-Sent Events")
 
 
 class ChunkInfo(BaseModel):
@@ -28,6 +29,7 @@ class AnswerResponse(BaseModel):
     # Telemetry & stats:
     retrieval_sec: float | None = None  # Retrieval latency in seconds (2 decimals)
     llm_sec: float | None = None  # Model answer latency in seconds (2 decimals)
+    ttft_sec: float | None = None  # Time to first token in seconds (2 decimals)
     retrieval_ms: float | None = None
     llm_ms: float | None = None
     input_tokens: int | None = None
