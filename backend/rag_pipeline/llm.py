@@ -22,8 +22,12 @@ def get_openai_client() -> OpenAI:
 
 def get_prompt_text(prompt_file=None) -> str:
     """Loads system instructions from the prompts directory."""
-    file_name = prompt_file or os.getenv("RAG_PROMPT_FILE", "v2.txt")
-    return (PROMPTS_DIR / file_name).read_text(encoding="utf-8").strip()
+    raw_name = (prompt_file or os.getenv("RAG_PROMPT_FILE") or "").strip()
+    file_name = raw_name if raw_name else "v2.txt"
+    target_path = PROMPTS_DIR / file_name
+    if not target_path.is_file():
+        target_path = PROMPTS_DIR / "v2.txt"
+    return target_path.read_text(encoding="utf-8").strip()
 
 
 def generate_rag_answer(context: str, question: str) -> dict:
