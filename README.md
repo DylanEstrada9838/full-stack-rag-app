@@ -162,7 +162,6 @@ cp backend/.env.example backend/.env
 | :--- | :--- | :--- | :--- |
 | `OPENAI_API_KEY` | **Yes** | — | OpenAI API key for `gpt-4.1-mini` inference |
 | `OPENAI_MODEL` | No | `gpt-4.1-mini` | OpenAI model identifier |
-| `OPENAI_BASE_URL` | No | — | Custom endpoint (e.g. for Azure OpenAI) |
 | `RAG_PROMPT_FILE` | No | `v2.txt` | Prompt template from `rag_pipeline/prompts/` |
 | `HF_TOKEN` | No | — | HuggingFace Hub token (optional) |
 | `EXTRA_CORS_ORIGINS`| No | — | Comma-separated list of allowed origins |

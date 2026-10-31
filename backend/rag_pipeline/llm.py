@@ -2,7 +2,6 @@
 llm.py — LLM instances and RAG chain orchestration.
 
 Uses the OpenAI Responses API with OPENAI_API_KEY.
-Optionally override the base URL via OPENAI_BASE_URL (for Azure or proxies).
 """
 
 import os
@@ -14,7 +13,7 @@ PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 
 
 def get_openai_client() -> OpenAI:
-    """Returns an OpenAI client. Reads OPENAI_API_KEY and optional OPENAI_BASE_URL."""
+    """Returns an OpenAI client initialized with OPENAI_API_KEY."""
     return OpenAI(
         api_key=os.getenv("OPENAI_API_KEY"),
     )

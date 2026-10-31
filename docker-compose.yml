@@ -24,7 +24,6 @@ services:
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4.1-mini}
-      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-}
       - RAG_PROMPT_FILE=${RAG_PROMPT_FILE:-v2.txt}
       - HF_TOKEN=${HF_TOKEN:-}
       - EXTRA_CORS_ORIGINS=${EXTRA_CORS_ORIGINS:-}
