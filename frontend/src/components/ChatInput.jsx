@@ -78,7 +78,6 @@ function ChatInput({ value, onChange, onSubmit, isLoading, maxChars = 500, minCh
         >
           Dylan Estrada
         </a>
-        {' · Asistido por Gemini 3.8 y Claude Sonnet 4.6'}
       </div>
     </form>
   )

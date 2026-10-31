@@ -11,7 +11,6 @@ relevant, context-grounded answers.
 Built with React, FastAPI, LangChain, ChromaDB, and OpenAI.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://full-stack-rag-app-beta.vercel.app/)
-[![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 
 🌐 **Live Application:** [https://full-stack-rag-app-beta.vercel.app/](https://full-stack-rag-app-beta.vercel.app/)
 
@@ -36,7 +35,7 @@ Built with React, FastAPI, LangChain, ChromaDB, and OpenAI.
 
 ## 🧠 RAG & Pipeline Architecture
 
-The core of this AI project is an end-to-end, sub-second hybrid RAG pipeline engineered for high precision, low latency, and factual grounding against academic regulatory documents. The diagram below illustrates the high-level architecture and interactions between the presentation layer, API layer, RAG retrieval engine, and cloud services:
+The core of this AI project is an end-to-end hybrid RAG pipeline featuring efficient document retrieval and streaming LLM generation, engineered for precision and factual grounding against academic regulatory documents. The diagram below illustrates the high-level architecture and interactions between the presentation layer, API layer, RAG retrieval engine, and cloud services:
 
 ![RAG App System Architecture](./assets/rag_app_system_architecture.png)
 
@@ -56,11 +55,11 @@ The core of this AI project is an end-to-end, sub-second hybrid RAG pipeline eng
 ### 3. Embedding Model
 * **Model**: `sentence-transformers/all-MiniLM-L6-v2`
 * **Inference Engine**: **FastEmbed ONNX Runtime** (CPU-optimized)
-* **Optimization Benchmarks & Production Benefits**:
-  * **Embedding Generation Time**: ~2–4x faster than standard PyTorch-based sentence transformers on CPU.
-  * **Memory Consumption (RAM)**: Operates within low-memory cloud footprints without loading heavy PyTorch runtimes into memory.
-  * **Docker Image Size**: Reduced by over 1.5 GB by omitting CUDA/PyTorch dependencies.
-  * **API Response Latency**: Sub-millisecond vector encoding per incoming user query.
+* **Key Advantages & Production Considerations**:
+  * **Embedding Generation Time**: Efficient CPU inference powered by ONNX Runtime without requiring dedicated GPU infrastructure.
+  * **Memory Consumption (RAM)**: Lean memory footprint suitable for resource-constrained cloud containers, avoiding heavy PyTorch runtime overhead.
+  * **Docker Image Size**: Substantially smaller container image by omitting PyTorch and CUDA runtime dependencies.
+  * **API Response Latency**: Fast, consistent query encoding that minimizes retrieval overhead.
 
 ---
 
@@ -75,16 +74,27 @@ Combines semantic understanding (dense vectors) with exact legal terminology mat
   * *Parameters*: Initially retrieves `fetch_k = 20` candidates and filters down to the `5` most diverse, useful chunks.
 * **Sparse Lexical Search (40% weight)**:
   * **Rank-BM25**: Keyword-frequency matching optimized for exact article numbers, penalties, infractions, and specialized academic terms.
-  * Pre-cached via serialized binary index (`bm25_retriever.pkl`) for zero cold-start delay.
+  * Pre-cached via serialized binary index (`bm25_retriever.pkl`) to avoid re-indexing during startup.
   * Retrieves `5` keyword-matched candidates.
-* **Reciprocal Rank Fusion / Ensemble**: Merges results with 0.6 dense / 0.4 sparse weighting, delivering the top 5 ground-truth chunks to the LLM in ~0.03s–0.06s.
+* **Ensemble Retrieval & Weighted Reciprocal Rank Fusion (RRF)**:
+  LangChain's `EnsembleRetriever` merges and re-ranks candidate documents from both retrievers using weighted Reciprocal Rank Fusion (RRF):
+  ```python
+  EnsembleRetriever(
+      retrievers=[vec_retriever, bm25_retriever],
+      weights=[0.6, 0.4],
+  )
+  ```
+  * `0.6` (60% weight): Dense MMR retriever — prioritizes semantic meaning, synonyms, and conceptual intent.
+  * `0.4` (40% weight): Sparse BM25 retriever — boosts exact article numbers, penalties, and legal terminology.
+  * Formula: $\text{RRF Score}(d) = 0.6 \cdot \frac{1}{\text{rank}_{\text{dense}}(d) + 60} + 0.4 \cdot \frac{1}{\text{rank}_{\text{bm25}}(d) + 60}$
+  * The top 5 highest-scoring ground-truth chunks are passed directly into the LLM context.
 
 ---
 
 ### 5. LLM Model & Generation Layer
 * **Model**: OpenAI `gpt-4.1-mini` via the official OpenAI Responses API.
-* **Context & Prompt Grounding**: Context injected directly into system instructions, enforcing strict adherence to provided articles and mitigating hallucinations.
-* **Prompt Versioning**: Systematic prompt templates managed in `backend/rag_pipeline/prompts/` (e.g. `v1.txt`, `v2.txt`), enabling zero-downtime prompt iterations via the `RAG_PROMPT_FILE` environment variable.
+* **Context & Prompt Grounding**: Context injected directly into system instructions, enforcing strict adherence to provided articles and reducing hallucinations.
+* **Prompt Versioning**: Systematic prompt templates managed in `backend/rag_pipeline/prompts/` (e.g. `v1.txt`, `v2.txt`), allowing prompt updates via the `RAG_PROMPT_FILE` environment variable without code modifications.
 * **Real-Time Token Streaming**:
   * **Server-Sent Events (SSE)**: Streams text deltas in real-time (`response.output_text.delta`), displaying a progressive typewriter effect in the frontend as tokens are generated.
 * **Full Telemetry & Metrics**:
@@ -105,7 +115,7 @@ Combines semantic understanding (dense vectors) with exact legal terminology mat
 ---
 
 ### 7. Presentation Layer
-* **React 19 & Vite**: Ultra-fast, lightweight client-side application.
+* **React 19 & Vite**: Fast, lightweight client-side application.
 * **Responsive Design**: Custom Vanilla CSS with mobile-first layout, glassmorphism, blinking streaming cursor, and slide-out bottom sheet chunk inspector.
 * **Live Telemetry UI**: Direct visual badges for Retrieval & Model durations, with a hoverable `+ Info` popover detailing TTFT, token usage, and query cost.
 * **Hosting**: Deployed globally via **Vercel Edge Network**.
@@ -118,18 +128,6 @@ Combines semantic understanding (dense vectors) with exact legal terminology mat
 * **Container Registry**: Automated image build and push to **Azure Container Registry (ACR)**.
 * **Cloud Infrastructure**: Scalable container execution on **Azure Container Apps** with environment secret management.
 
----
-
-## 🛠️ Tech Stack
-
-| Category | Technologies | Purpose |
-| :--- | :--- | :--- |
-| **Orchestration & RAG** | LangChain, Rank-BM25 | Document loading, chunking, ensemble retrieval |
-| **Embeddings & Vectorstore** | FastEmbed ONNX, ChromaDB | CPU-optimized dense embeddings & vector storage |
-| **LLM & Inference** | OpenAI `gpt-4.1-mini`, SSE | Context-grounded generation & token streaming |
-| **Backend API** | FastAPI, Uvicorn, Pydantic | High-concurrency async REST & streaming service |
-| **Frontend UI** | React 19, Vite, Vanilla CSS | Responsive chat interface with real-time telemetry |
-| **DevOps & Cloud** | Docker, GitHub Actions, Azure Container Apps, ACR, Vercel | Automated CI/CD, container registry & edge delivery |
 
 ---
 
@@ -246,8 +244,8 @@ rag-app/
 │   ├── rag_pipeline/                # RAG core modules
 │   │   ├── documents/               # Source PDF regulation documents
 │   │   ├── prompts/                 # Prompt versioning (v1.txt, v2.txt)
-│   │   ├── chroma_db/               # Persistent Chroma vectorstore
-│   │   ├── bm25_retriever.pkl       # Pre-cached BM25 index
+│   │   ├── chroma_db/               # Persistent Chroma vectorstore (generated at build, gitignored)
+│   │   ├── bm25_retriever.pkl       # Pre-cached BM25 index (generated at build, gitignored)
 │   │   ├── chunking.py              # Recursive character splitting logic
 │   │   ├── vectorstore.py           # FastEmbed + ChromaDB setup
 │   │   ├── retriever.py             # Hybrid ensemble (Dense MMR + Sparse BM25)
@@ -273,5 +271,5 @@ rag-app/
 
 ## 👨‍💻 Author
 
-**Dylan Estrada** · *Asistido por Gemini 3.8 y Claude Sonnet 4.6*  
+**Dylan Estrada**  
 💼 [LinkedIn](https://www.linkedin.com/in/dylan-estrada-606691216/) · 🐙 [GitHub](https://github.com/DylanEstrada9838)
